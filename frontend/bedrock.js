@@ -20,7 +20,7 @@ const BedrockAI = (() => {
 
   // Model to use — Claude Haiku 4.5 via Bedrock Converse API
   // Supports text + image input
-  const MODEL_ID = 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
+  const MODEL_ID = 'global.anthropic.claude-haiku-4-5-20251001-v1:0';
 
   // System prompt shared across all Learnora AI features
   const SYSTEM_PROMPT = `You are Learnora Copilot, an expert AI tutor built into
