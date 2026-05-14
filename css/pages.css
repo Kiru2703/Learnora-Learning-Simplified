@@ -1,0 +1,744 @@
+/* ============================================================
+   pages.css — Chat page styles
+   ============================================================ */
+
+/* ── Onboarding Overlay ── */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(8, 8, 16, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+.onboarding-overlay.hidden {
+  animation: fadeOut 0.35s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.97); }
+}
+
+.onboarding-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 48px 44px 44px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(124,58,237,0.15);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.onboarding-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.onboarding-logo-icon {
+  font-size: 26px;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.onboarding-logo-text {
+  font-size: 20px;
+  font-weight: 800;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.onboarding-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.onboarding-title span {
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.onboarding-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.onboarding-input-row {
+  margin-bottom: 20px;
+}
+
+.onboarding-name-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 13px 18px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.onboarding-name-input::placeholder {
+  color: var(--text-muted);
+}
+
+.onboarding-name-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+.onboarding-btn {
+  width: 100%;
+  padding: 13px 24px;
+  background: var(--gradient-btn);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.35);
+}
+
+.onboarding-btn:hover {
+  background: var(--gradient-btn-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(124, 58, 237, 0.5);
+}
+
+.onboarding-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.onboarding-arrow {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.onboarding-btn:hover .onboarding-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Chat Page ── */
+
+/*
+ * Two-state layout:
+ *
+ * EMPTY (.chat-container, no .has-messages):
+ *   Full viewport height, flex column, justify-content:center
+ *   so greeting + input sit in the exact middle. Messages div
+ *   has zero size and is invisible — nothing causes overflow.
+ *
+ * ACTIVE (.chat-container.has-messages):
+ *   Switches to justify-content:flex-start. Messages div
+ *   becomes flex:1 with overflow-y:auto so only it scrolls.
+ *   The container itself never overflows the viewport.
+ */
+
+.chat-container {
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  /* Fill the viewport exactly — no overflow */
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  padding: 0 24px;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* ── Empty state ── */
+.chat-messages {
+  order: 2;
+  flex: 0 0 0;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.chat-header {
+  order: 1;
+  text-align: center;
+  padding: 0 0 24px;
+  flex-shrink: 0;
+}
+
+.chat-input-area {
+  order: 3;
+  flex-shrink: 0;
+}
+
+/* ── Active state (messages present) ── */
+.chat-container.has-messages {
+  justify-content: flex-start;
+}
+
+.chat-container.has-messages .chat-messages {
+  flex: 1 1 auto;
+  min-height: 0;          /* lets flex child shrink below content size */
+  overflow-y: auto;
+  opacity: 1;
+  pointer-events: auto;
+  padding: 16px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-container.has-messages .chat-header {
+  padding: 20px 0 14px;
+}
+
+.chat-container.has-messages .chat-input-area {
+  padding: 6px 0 16px;
+}
+
+/* Greeting + motto */
+.chat-motto {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  opacity: 0.85;
+}
+
+.chat-header h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .chat-container {
+    height: calc(100vh - 56px);
+    max-height: calc(100vh - 56px);
+    padding: 0 16px;
+  }
+
+  .chat-header h1 {
+    font-size: 20px;
+  }
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  animation: fadeIn 0.3s ease;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.message.user .message-avatar {
+  background: linear-gradient(135deg, var(--grad-teal), var(--grad-blue));
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.message.assistant .message-bubble {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top-left-radius: 4px;
+}
+
+.message.user .message-bubble {
+  background: var(--gradient-btn);
+  border-top-right-radius: 4px;
+}
+
+/* File attachment badge inside a user message */
+.message-file-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+/* Pathway card inside chat */
+.pathway-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-top: 8px;
+}
+
+.pathway-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pathway-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pathway-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(124, 58, 237, 0.08);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pathway-step:hover {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: var(--border-color);
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--gradient-btn);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.step-info {
+  flex: 1;
+}
+
+.step-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.step-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Unified Input Area ── */
+
+/*
+ * The chat-input-wrapper is the single drop target.
+ * It stacks vertically:
+ *   1. chat-drag-overlay  — absolute overlay shown while dragging
+ *   2. chat-file-preview  — inline file chip (hidden until file attached)
+ *   3. chat-text-row      — textarea + action buttons (always visible)
+ */
+
+.chat-input-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 0;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden; /* keeps overlay clipped to rounded corners */
+}
+
+/* Focus ring when textarea is active */
+.chat-input-wrapper:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+/* Drag-over state — dashed purple border + tint */
+.chat-input-wrapper.drag-over {
+  border-color: var(--accent-primary);
+  border-style: dashed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+/* ── Drag overlay label ── */
+.chat-drag-overlay {
+  display: none;           /* shown via JS when drag-over */
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(13, 10, 28, 0.82);
+  backdrop-filter: blur(2px);
+  border-radius: inherit;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-accent);
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  letter-spacing: 0.2px;
+}
+
+.chat-input-wrapper.drag-over .chat-drag-overlay {
+  display: flex;
+}
+
+/* ── Inline file preview chip ── */
+.chat-file-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px 0 18px;
+  animation: fadeIn 0.18s ease;
+}
+
+.cfp-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.cfp-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.cfp-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2dd4bf;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+.cfp-size {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cfp-remove {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #f87171;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+  padding: 0;
+}
+
+.cfp-remove:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.55);
+  transform: scale(1.12);
+}
+
+/* ── Text row: textarea + buttons ── */
+.chat-text-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 10px 10px 10px 18px;
+}
+
+.chat-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  max-height: 120px;
+  line-height: 1.55;
+  padding: 2px 0;
+}
+
+.chat-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Action buttons: attach + mic */
+.chat-action-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.chat-action-btn:hover {
+  background: rgba(124, 58, 237, 0.1);
+  border-color: var(--border-color);
+  color: var(--text-accent);
+}
+
+.chat-action-btn.active {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* File button active (file attached) */
+.chat-action-btn.file-attached {
+  background: rgba(13, 148, 136, 0.15);
+  border-color: rgba(13, 148, 136, 0.4);
+  color: #2dd4bf;
+}
+
+/* Send button */
+.chat-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-btn);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.chat-send:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.5);
+}
+
+/* ── File error toast ── */
+.chat-file-error {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  margin-top: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: #f87171;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Mic status bar */
+.mic-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  margin-top: 8px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: #f87171;
+  animation: fadeIn 0.2s ease;
+}
+
+.mic-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: micPulse 1s infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: typingBounce 1.2s infinite;
+}
+
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* Pathway view (opened from sidebar) */
+.pathway-view {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pathway-view-header {
+  margin-bottom: 32px;
+}
+
+.pathway-view-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.pathway-view-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+.pathway-notes {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.pathway-notes h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text-accent);
+}
+
+.pathway-notes p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.pathway-notes ul {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 2;
+  padding-left: 20px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .onboarding-card {
+    padding: 36px 24px 32px;
+  }
+
+  .onboarding-title {
+    font-size: 19px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+  }
+}
