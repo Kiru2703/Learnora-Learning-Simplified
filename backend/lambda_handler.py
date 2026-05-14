@@ -16,11 +16,10 @@ CORS(app)
 
 # ── Configuration ─────────────────────────────────────────────
 REGION   = "ap-southeast-2"
-MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"   # match template.yaml
+MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 MAX_TOKENS = 2048
 
-# Initialize Bedrock client (works in Lambda and local dev)
-bedrock = boto3.client("bedrock-runtime", region_name=REGION)
+bedrock = None  # initialized after credentials are set
 
 
 def build_converse_content(content):
@@ -116,6 +115,10 @@ def chat():
 
 # ── Lambda entry point ───────────────────────────────────────
 def handler(event, context):
+    global bedrock
+    if bedrock is None:
+        bedrock = boto3.client("bedrock-runtime", region_name=REGION)
+
     try:
         body = json.loads(event.get("body", "{}"))
         messages = body.get("messages", [])
@@ -166,14 +169,19 @@ def handler(event, context):
         }
 
 
-# ── Local dev runner ─────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════
+#  LOCAL DEV — Paste your AWS credentials below, then run:
+#  python lambda_handler.py
+# ══════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     import os
 
-    # Paste sandbox credentials here for local dev only
-    os.environ["AWS_ACCESS_KEY_ID"]     = ""
-    os.environ["AWS_SECRET_ACCESS_KEY"] = ""
-    os.environ["AWS_SESSION_TOKEN"]     = ""
+    os.environ["AWS_ACCESS_KEY_ID"]     = ""  # ← paste here
+    os.environ["AWS_SECRET_ACCESS_KEY"] = ""  # ← paste here
+    os.environ["AWS_SESSION_TOKEN"]     = ""  # ← paste here
+
+    # Create client AFTER credentials are set
+    bedrock = boto3.client("bedrock-runtime", region_name=REGION)
 
     print("=" * 50)
     print("  Learnora Bedrock Server")
