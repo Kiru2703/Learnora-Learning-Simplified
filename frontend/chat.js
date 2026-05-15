@@ -62,7 +62,8 @@ const ChatPage = (() => {
   }
 
   // ── File attachment + drag-and-drop ───────────────────────
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+  // Max file size — no hard limit since we extract topic from filename for binary files
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB (only text files are sent to API; binary files use filename)
   const ALLOWED_TYPES = ['.pdf', '.docx', '.txt', '.md', '.ppt', '.pptx'];
   const FILE_ICONS = { pdf: '📕', docx: '📘', doc: '📘', txt: '📄', md: '📝', ppt: '📙', pptx: '📙' };
 
@@ -415,35 +416,44 @@ const ChatPage = (() => {
       let fileTopic = null;
       try {
         let fileContent = null;
-        if (fileForQuery) {
-          // Only read text-based files; binary formats (pdf, pptx, ppt, docx) can't be read as text in the browser
-          const binaryTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-          if (!binaryTypes.includes(fileForQuery.type)) {
-            try { fileContent = await fileForQuery.text(); } catch (_) {}
-          }
-          // For binary files, extract the topic from the filename
-          if (!fileContent) {
-            // Strip extension and clean up filename to get the topic
-            const cleanName = fileForQuery.name
-              .replace(/\.[^.]+$/, '')           // remove extension
-              .replace(/[-_]/g, ' ')             // replace dashes/underscores with spaces
-              .replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '') // remove chapter/module prefixes
-              .replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '') // remove roman numerals
-              .replace(/\s+/g, ' ')              // collapse whitespace
-              .trim();
-            fileTopic = cleanName || fileForQuery.name.replace(/\.[^.]+$/, '');
-            fileContent = `The student uploaded a file titled "${fileForQuery.name}". The topic is: ${fileTopic}. Generate a detailed learning pathway for this topic.`;
-          }
+        const isDocumentFile = fileForQuery && [
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/msword'
+        ].includes(fileForQuery.type);
+
+        if (fileForQuery && !isDocumentFile) {
+          // Text-based files (.txt, .md): read content directly and send to AI
+          try { fileContent = await fileForQuery.text(); } catch (_) {}
         }
 
-        const isPathwayRequest = /pathway|plan|roadmap|learn|study|course|curriculum|teach me|how to learn|guide/i.test(query);
+        if (isDocumentFile) {
+          // Binary files (PDF, PPTX, DOCX): extract topic from filename
+          const cleanName = fileForQuery.name
+            .replace(/\.[^.]+$/, '')           // remove extension
+            .replace(/[-_]/g, ' ')             // replace dashes/underscores with spaces
+            .replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '') // remove chapter/module prefixes
+            .replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '') // remove roman numerals
+            .replace(/\bVE\b/gi, '')           // remove common suffixes
+            .replace(/\bMQF\b/gi, '')
+            .replace(/\s+/g, ' ')              // collapse whitespace
+            .trim();
+          fileTopic = cleanName || fileForQuery.name.replace(/\.[^.]+$/, '');
+          fileContent = `The student uploaded a lecture file: "${fileForQuery.name}". The topic is: "${fileTopic}". Generate a detailed learning pathway for this topic based on your knowledge of the subject.`;
+        }
+
+        const isPathwayRequest = /pathway|plan|roadmap|learn|study|course|curriculum|teach me|how to learn|guide|make/i.test(query);
 
         if (isPathwayRequest || fileContent) {
           const pathway = await BedrockAI.generatePathway(query, fileContent);
           removeTyping();
-          const pwId = addToPathwayList(pathway);
-          const intro = "I've built a personalised learning pathway for you. Click any topic to start studying!";
-          addMessage('assistant', `${escapeHtml(intro)}<br><br>${buildPathwayHTML(pathway, pwId)}`, true);
+          const pwId = addToPathwayList(pathway, fileTopic);
+          const intro = fileForQuery
+            ? `I've analysed "<strong>${escapeHtml(fileForQuery.name)}</strong>" and built a learning pathway for <strong>${escapeHtml(fileTopic)}</strong>. Click any topic to start studying!`
+            : "I've built a personalised learning pathway for you. Click any topic to start studying!";
+          addMessage('assistant', `${intro}<br><br>${buildPathwayHTML(pathway, pwId)}`, true);
         } else {
           _chatHistory.push({ role: 'user', content: query });
           const reply = await BedrockAI.chat(query, { history: _chatHistory.slice(-10) });
@@ -454,15 +464,27 @@ const ChatPage = (() => {
       } catch (err) {
         console.error('Bedrock error:', err);
         removeTyping();
+        // Extract topic from filename for fallback
+        if (fileForQuery && !fileTopic) {
+          const cleanName = fileForQuery.name
+            .replace(/\.[^.]+$/, '')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '')
+            .replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '')
+            .replace(/\bVE\b/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+          fileTopic = cleanName || fileForQuery.name.replace(/\.[^.]+$/, '');
+        }
         const fallbackPathway = getPathwayForQuery(query, fileTopic);
-        const fallbackPwId = addToPathwayList(fallbackPathway);
+        const fallbackPwId = addToPathwayList(fallbackPathway, fileTopic);
         addMessage('assistant', `⚠️ AI error: ${escapeHtml(err.message)}<br><br>Falling back to offline mode.<br><br>${buildPathwayHTML(fallbackPathway, fallbackPwId)}`, true);
       }
     } else {
       setTimeout(() => {
         removeTyping();
         const pathway = getPathwayForQuery(query);
-        const pwId = addToPathwayList(pathway);
+        const pwId = addToPathwayList(pathway, null);
         const responseText = RESPONSES[Math.floor(Math.random() * RESPONSES.length)];
         addMessage('assistant', `${responseText}<br><br>${buildPathwayHTML(pathway, pwId)}`, true);
       }, 1000);
@@ -478,7 +500,7 @@ const ChatPage = (() => {
       .replace(/\n/g,            '<br>');
   }
 
-    function addToPathwayList(pathway) {
+    function addToPathwayList(pathway, sourceTopic) {
     // Generate a unique ID for this pathway
     const pwId = 'pw-' + Date.now();
 
@@ -500,6 +522,7 @@ const ChatPage = (() => {
         name: pathway.title.replace(' Learning Pathway', '').replace(' Pathway', ''),
         icon: '📚',
         topics: topics,
+        sourceTopic: sourceTopic || null,  // Store the extracted topic name for note generation context
       };
       window.PATHWAYS.push(pwEntry);
 
