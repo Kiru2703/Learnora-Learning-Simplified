@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Configuration ─────────────────────────────────────────────
-REGION   = "ap-southeast-5"
+REGION   = "ap-southeast-5"   # Bedrock is supported here
 MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 MAX_TOKENS = 2048
 
@@ -189,6 +189,3 @@ if __name__ == "__main__":
     print("  URL:    http://localhost:5000")
     print("=" * 50)
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-# PYTHON SCRIPS FROM HERE
-
