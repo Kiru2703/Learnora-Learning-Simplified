@@ -76,19 +76,6 @@ Resources:
         IndexDocument: index.html
         ErrorDocument: error.html
 
-  FrontendBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref FrontendBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: PublicReadGetObject
-            Effect: Allow
-            Principal: "*"
-            Action: s3:GetObject
-            Resource: !Sub "${FrontendBucket.Arn}/*"
-
 Outputs:
   ApiUrl:
     Description: "API Gateway endpoint — paste this into frontend/index.html as LEARNORA_API_URL"
