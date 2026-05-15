@@ -330,7 +330,20 @@ function openPathway(id) {
   if ((!data || !data.content) && window.BedrockAI && BedrockAI.isConfigured()) {
     const topicTitle = topicMeta?.title || 'Topic';
     const pathwayName = parentPathway?.name || 'Pathway';
-    BedrockAI.generateNotes(topicTitle, pathwayName).then(html => {
+    const sourceTopic = parentPathway?.sourceTopic || null;
+
+    // If the pathway was created from an uploaded file, include the source topic for richer context
+    const notePrompt = sourceTopic
+      ? `Generate comprehensive study notes for the topic "${topicTitle}" which is part of a course on "${sourceTopic}" (pathway: "${pathwayName}").`
+      : `Generate comprehensive study notes for the topic "${topicTitle}" (part of the "${pathwayName}" pathway).`;
+
+    const fullPrompt = `${notePrompt}
+
+Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <code>, <pre><code>.
+Include: overview, key concepts, detailed explanations, examples, and a summary.
+Keep it educational, thorough, and well-structured (500-800 words).`;
+
+    BedrockAI.chat(fullPrompt).then(html => {
       // Store generated content
       if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: topicTitle, subtitle: '', progress: 50, content: null };
       PATHWAY_DATA[id].content = html;
