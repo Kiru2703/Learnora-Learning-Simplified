@@ -39,10 +39,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: learnora-bedrock-proxy
-      Handler: lambda_handler.handler        # file.function
-      CodeUri: ../backend                    # points to backend folder
+      Handler: lambda_handler.handler
+      CodeUri: ../backend
       Description: Proxies Learnora AI requests to AWS Bedrock (Claude 3 Haiku)
-      Role: !GetAtt LearnoraLambdaRole.Arn   # use the role defined above
+      Role: !GetAtt LearnoraLambdaRole.Arn
       Events:
         ChatPost:
           Type: Api
@@ -75,6 +75,19 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: error.html
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${FrontendBucket.Arn}/*"
 
 Outputs:
   ApiUrl:
