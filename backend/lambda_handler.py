@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ── Configuration ─────────────────────────────────────────────
-REGION   = "ap-southeast-2"
+REGION   = "ap-southeast-5"
 MODEL_ID = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 MAX_TOKENS = 2048
 
