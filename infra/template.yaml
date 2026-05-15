@@ -22,7 +22,7 @@ Resources:
     Properties:
       FunctionName: learnora-bedrock-proxy
       Handler: lambda_handler.handler        # file.function
-      CodeUri: backend                       # points to backend folder
+      CodeUri: ../backend                       # points to backend folder
       Description: Proxies Learnora AI requests to AWS Bedrock (Claude 3 Haiku)
       Role: arn:aws:iam::443407534411:role/LabRole   # replace with your sandbox LabRole ARN
       Events:
