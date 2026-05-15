@@ -16,15 +16,33 @@ Globals:
 
 Resources:
 
-  # ── Lambda function ──────────────────────────────────────
+  # ── IAM Role for Lambda ──────────────────────────────────────
+  LearnoraLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: learnora-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
+        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+
+  # ── Lambda function ──────────────────────────────────────────
   LearnoraBedrockFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: learnora-bedrock-proxy
       Handler: lambda_handler.handler        # file.function
-      CodeUri: ../backend                       # points to backend folder
+      CodeUri: ../backend                    # points to backend folder
       Description: Proxies Learnora AI requests to AWS Bedrock (Claude 3 Haiku)
-      Role: arn:aws:iam::443407534411:role/LabRole   # replace with your sandbox LabRole ARN
+      Role: !GetAtt LearnoraLambdaRole.Arn   # use the role defined above
       Events:
         ChatPost:
           Type: Api
@@ -39,7 +57,7 @@ Resources:
             Path: /chat
             Method: OPTIONS
 
-  # ── API Gateway ──────────────────────────────────────────
+  # ── API Gateway ──────────────────────────────────────────────
   LearnoraApi:
     Type: AWS::Serverless::Api
     Properties:
