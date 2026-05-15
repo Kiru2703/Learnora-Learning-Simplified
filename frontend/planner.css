@@ -1,0 +1,711 @@
+/* ============================================================
+   planner.css — Deadline Planner styles
+   ============================================================ */
+
+.planner-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.planner-page-header {
+  margin-bottom: 28px;
+}
+
+.planner-page-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  background: var(--gradient-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+
+.planner-page-header p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* Add deadline form */
+.add-deadline-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.add-deadline-form h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.form-label-optional {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-input,
+.form-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236060a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.form-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.add-btn {
+  padding: 10px 20px;
+  background: var(--gradient-btn);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+  height: 40px;
+}
+
+.add-btn:hover {
+  background: var(--gradient-btn-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Calendar view */
+.planner-calendar-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.planner-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.planner-cal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.planner-cal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.planner-cal-nav {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.planner-cal-nav:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.view-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.view-toggle-btn {
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.view-toggle-btn.active {
+  background: var(--gradient-btn);
+  color: #fff;
+}
+
+/* Month view grid */
+.planner-month-grid {
+  width: 100%;
+}
+
+.planner-day-names {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.planner-day-names span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.planner-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.planner-day-cell {
+  min-height: 80px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.planner-day-cell:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: var(--border-color);
+}
+
+.planner-day-cell.today {
+  border-color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.planner-day-cell.other-month {
+  opacity: 0.35;
+}
+
+.planner-day-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.planner-day-cell.today .planner-day-num {
+  color: var(--text-accent);
+}
+
+.deadline-dot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deadline-dot.low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+
+.deadline-dot.medium {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+}
+
+.deadline-dot.high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* Week view */
+.planner-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.week-day-col {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  min-height: 200px;
+}
+
+.week-day-col.today {
+  border-color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.06);
+}
+
+.week-day-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.week-day-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.week-day-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.week-day-col.today .week-day-num {
+  color: var(--text-accent);
+}
+
+/* Deadline list */
+.deadlines-list-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.deadlines-list-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.deadline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deadline-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.deadline-item:hover {
+  background: rgba(124, 58, 237, 0.06);
+  border-color: var(--border-color);
+}
+
+.deadline-priority-bar {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.deadline-priority-bar.low  { background: var(--priority-low); }
+.deadline-priority-bar.medium { background: var(--priority-medium); }
+.deadline-priority-bar.high { background: var(--priority-high); }
+
+.deadline-info {
+  flex: 1;
+}
+
+.deadline-topic {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.deadline-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.deadline-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.deadline-badge.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--priority-low);
+}
+
+.deadline-badge.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--priority-medium);
+}
+
+.deadline-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--priority-high);
+}
+
+/* Action buttons row */
+.deadline-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.deadline-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.deadline-edit-btn:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: var(--border-color);
+  color: var(--text-accent);
+}
+
+.deadline-done-btn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--priority-low);
+}
+
+.deadline-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: var(--priority-high);
+}
+
+/* Done state */
+.deadline-item--done {
+  opacity: 0.55;
+}
+
+.deadline-item--done .deadline-topic {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Completed section header */
+.completed-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 8px;
+}
+
+/* ── Edit Deadline Modal ── */
+.deadline-edit-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(5, 5, 14, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.deadline-edit-backdrop.open {
+  display: flex;
+  animation: dlModalFadeIn 0.2s ease;
+}
+
+@keyframes dlModalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.deadline-edit-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(124,58,237,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  animation: dlModalSlideUp 0.24s cubic-bezier(0.16,1,0.3,1);
+}
+
+@keyframes dlModalSlideUp {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.deadline-edit-modal::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: var(--gradient-main);
+}
+
+.deadline-edit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 0;
+}
+
+.deadline-edit-modal-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.deadline-edit-close {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.deadline-edit-close:hover {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #f87171;
+}
+
+.deadline-edit-modal-body {
+  padding: 20px 20px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Two-column row inside the edit modal */
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.deadline-edit-modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 14px 20px 20px;
+}
+
+.deadline-edit-btn-cancel,
+.deadline-edit-btn-save {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.deadline-edit-btn-cancel {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+.deadline-edit-btn-cancel:hover {
+  background: rgba(255,255,255,0.09);
+  color: var(--text-primary);
+}
+
+.deadline-edit-btn-save {
+  background: var(--gradient-btn);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(124,58,237,0.3);
+}
+
+.deadline-edit-btn-save:hover {
+  background: var(--gradient-btn-hover);
+  box-shadow: 0 4px 16px rgba(124,58,237,0.45);
+  transform: translateY(-1px);
+}
+
+/* ── Date / time picker icon overrides ───────────────────────
+   .form-input--datetime is applied only to the Due Date and
+   Due Time inputs. The inputs themselves stay in the dark theme
+   (inheriting .form-input styles). Only the native calendar /
+   clock icon and the picker popup are overridden here.
+   ─────────────────────────────────────────────────────────── */
+
+/* color-scheme: dark tells the browser to render its native
+   date/time picker popup (calendar grid, time dropdown) using
+   the OS dark-mode palette — dark background, white text,
+   system-accent highlight. This is the only cross-browser CSS
+   hook that affects the popup chrome itself. */
+.form-input--datetime {
+  color-scheme: dark;
+}
+
+/* Default: icon is already white because color-scheme:dark tells
+   the browser to use a light glyph on dark backgrounds. */
+.form-input--datetime::-webkit-calendar-picker-indicator {
+  opacity: 0.85;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 1px;
+  transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
+/* Hover / focus: purple accent (#7A42F4) */
+.form-input--datetime:hover::-webkit-calendar-picker-indicator,
+.form-input--datetime:focus::-webkit-calendar-picker-indicator {
+  /* Force the glyph to #7A42F4 regardless of browser default */
+  filter: brightness(0) saturate(100%) invert(28%) sepia(89%) saturate(1800%) hue-rotate(248deg) brightness(110%);
+  opacity: 1;
+}
+
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot.low    { background: var(--priority-low); }
+.legend-dot.medium { background: var(--priority-medium); }
+.legend-dot.high   { background: var(--priority-high); }
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-week-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .planner-days-grid {
+    gap: 2px;
+  }
+
+  .planner-day-cell {
+    min-height: 60px;
+  }
+}
