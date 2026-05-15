@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    app.js — Main application controller
    ============================================================ */
 
@@ -98,7 +98,8 @@ function navigateTo(page) {
 // ── Pathway viewer ────────────────────────────────────────────
 
 // ── Pathway data — grouped by pathway ────────────────────────
-const PATHWAYS = [];
+// Using var so these are accessible from other scripts (chat.js) via window scope
+var PATHWAYS = [];
 // Pathways are dynamically generated when you upload notes or ask the chat.
 
 // Track which pathway groups are open and which topic/pathway is active
@@ -153,7 +154,7 @@ function renderPathways() {
 
   container.innerHTML = groupsHTML + recentHTML;
 }
-const PATHWAY_DATA = {};
+var PATHWAY_DATA = {};
 // Topic content is generated dynamically by Bedrock when you open a topic.
 
 function openPathway(id) {
