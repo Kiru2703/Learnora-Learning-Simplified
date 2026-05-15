@@ -34,6 +34,6 @@ jobs:
             --stack-name learnora-stack \
             --s3-bucket $SAM_DEPLOY_BUCKET \
             --capabilities CAPABILITY_IAM \
-            --region ap-southeast-2 \
+            --region ap-southeast-5 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset
