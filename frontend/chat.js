@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    chat.js — Chat page: onboarding, voice input, file attach,
               greeting, pathway generation
    ============================================================ */
@@ -281,7 +281,8 @@ const ChatPage = (() => {
   // Conversation history for multi-turn chat context
   const _chatHistory = [];
 
-  const PATHWAYS = {};
+  // Note: Global PATHWAYS array and PATHWAY_DATA are defined in app.js
+  // We access them via window scope in addToPathwayList
 
   function getPathwayForQuery(query) {
     const words = query.split(' ').filter(w => w.length > 3);
@@ -407,8 +408,16 @@ const ChatPage = (() => {
     if (window.BedrockAI && BedrockAI.isConfigured()) {
       try {
         let fileContent = null;
-        if (fileForQuery && fileForQuery.type !== 'application/pdf') {
-          try { fileContent = await fileForQuery.text(); } catch (_) {}
+        if (fileForQuery) {
+          // Only read text-based files; binary formats (pdf, pptx, ppt, docx) can't be read as text
+          const binaryTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+          if (!binaryTypes.includes(fileForQuery.type)) {
+            try { fileContent = await fileForQuery.text(); } catch (_) {}
+          }
+          // For binary files, use the filename as context hint
+          if (!fileContent && fileForQuery.name) {
+            fileContent = `[Uploaded file: ${fileForQuery.name}] — Generate a learning pathway based on this file's topic.`;
+          }
         }
 
         const isPathwayRequest = /pathway|plan|roadmap|learn|study|course|curriculum|teach me|how to learn|guide/i.test(query);
@@ -457,7 +466,7 @@ const ChatPage = (() => {
     // Generate a unique ID for this pathway
     const pwId = 'pw-' + Date.now();
 
-    // Build topics array for the global PATHWAYS structure
+    // Build topics array for the global PATHWAYS structure (defined in app.js)
     const topics = pathway.steps.map((step, i) => {
       const topicId = `${pwId}-t${i}`;
       return {
@@ -469,18 +478,18 @@ const ChatPage = (() => {
     });
 
     // Register in the global PATHWAYS array (defined in app.js)
-    if (window.PATHWAYS || typeof PATHWAYS !== 'undefined') {
+    if (typeof window.PATHWAYS !== 'undefined' && Array.isArray(window.PATHWAYS)) {
       const pwEntry = {
         id: pwId,
         name: pathway.title.replace(' Learning Pathway', '').replace(' Pathway', ''),
         icon: '📚',
         topics: topics,
       };
-      PATHWAYS.push(pwEntry);
+      window.PATHWAYS.push(pwEntry);
 
       // Initialize PATHWAY_DATA for each topic (content generated on open)
       topics.forEach(t => {
-        PATHWAY_DATA[t.id] = {
+        window.PATHWAY_DATA[t.id] = {
           title: t.title,
           subtitle: '',
           progress: 0,
@@ -489,8 +498,8 @@ const ChatPage = (() => {
       });
 
       // Re-render the sidebar pathway list
-      if (typeof renderPathways === 'function') {
-        renderPathways();
+      if (typeof window.renderPathways === 'function') {
+        window.renderPathways();
       }
     }
 
