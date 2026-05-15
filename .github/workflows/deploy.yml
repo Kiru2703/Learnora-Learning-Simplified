@@ -1,4 +1,4 @@
-name: Deploy Learnora Backend
+name: Deploy Learnora Fullstack
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install aws-sam-cli
 
-      - name: Deploy with SAM
+      - name: Deploy Backend with SAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -36,3 +36,18 @@ jobs:
             --region ap-southeast-5 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset
+
+      - name: Upload Frontend to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp frontend/ s3://lab-sam-deploy-kiru-2703/ --recursive --region ap-southeast-5
+
+      - name: Print URLs
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "✅ API URL: https://egufrsd9ae.execute-api.ap-southeast-5.amazonaws.com/prod"
+          echo "✅ Frontend URL: http://lab-sam-deploy-kiru-2703.s3-website-ap-southeast-5.amazonaws.com"
