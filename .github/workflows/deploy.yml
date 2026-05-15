@@ -41,7 +41,28 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 sync frontend/ s3://lab-sam-deploy-kiru-2703/ --delete --region ap-southeast-5
+          # Get the bucket name from stack outputs
+          FRONTEND_BUCKET=$(aws cloudformation describe-stack-resources \
+            --stack-name learnora-stack \
+            --region ap-southeast-5 \
+            --query "StackResources[?LogicalResourceId=='FrontendBucket'].PhysicalResourceId" \
+            --output text)
+
+          echo "Uploading frontend files to bucket: $FRONTEND_BUCKET"
+
+          # Disable Block Public Access at bucket level
+          aws s3api put-public-access-block \
+            --bucket $FRONTEND_BUCKET \
+            --public-access-block-configuration '{
+              "BlockPublicAcls": false,
+              "IgnorePublicAcls": false,
+              "BlockPublicPolicy": false,
+              "RestrictPublicBuckets": false
+            }' \
+            --region ap-southeast-5
+
+          # Upload frontend files with public-read ACL
+          aws s3 sync frontend/ s3://$FRONTEND_BUCKET --delete --region ap-southeast-5 --acl public-read
 
       - name: Print stack outputs
         env:
