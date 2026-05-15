@@ -19,8 +19,7 @@ jobs:
           python-version: '3.12'
 
       - name: Install AWS SAM CLI
-        run: |
-          pip install aws-sam-cli
+        run: pip install aws-sam-cli
 
       - name: Deploy Backend with SAM
         env:
@@ -42,12 +41,15 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp frontend/ s3://lab-sam-deploy-kiru-2703/ --recursive --region ap-southeast-5
+          aws s3 sync frontend/ s3://lab-sam-deploy-kiru-2703/ --delete --region ap-southeast-5
 
-      - name: Print URLs
+      - name: Print stack outputs
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          echo "✅ API URL: https://egufrsd9ae.execute-api.ap-southeast-5.amazonaws.com/prod"
-          echo "✅ Frontend URL: http://lab-sam-deploy-kiru-2703.s3-website-ap-southeast-5.amazonaws.com"
+          aws cloudformation describe-stacks \
+            --stack-name learnora-stack \
+            --region ap-southeast-5 \
+            --query "Stacks[0].Outputs" \
+            --output table
