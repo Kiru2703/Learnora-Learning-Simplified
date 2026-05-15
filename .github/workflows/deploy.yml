@@ -32,7 +32,7 @@ jobs:
             --template-file infra/template.yaml \
             --stack-name learnora-stack \
             --s3-bucket $SAM_DEPLOY_BUCKET \
-            --capabilities CAPABILITY_IAM \
+            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
             --region ap-southeast-5 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset
