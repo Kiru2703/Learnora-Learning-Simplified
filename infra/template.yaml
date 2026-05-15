@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Learnora — AWS Bedrock proxy (Lambda + API Gateway)
+Description: Learnora — AWS Bedrock proxy (Lambda + API Gateway + Frontend Hosting)
 
 Globals:
   Function:
@@ -68,10 +68,25 @@ Resources:
         AllowHeaders: "'Content-Type, Authorization'"
         AllowOrigin: "'*'"
 
+  # ── S3 Bucket for Frontend ───────────────────────────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: lab-sam-deploy-kiru-2703
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      AccessControl: PublicRead
+
 Outputs:
   ApiUrl:
     Description: "API Gateway endpoint — paste this into frontend/index.html as LEARNORA_API_URL"
     Value: !Sub "https://${LearnoraApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+
   FunctionArn:
     Description: Lambda function ARN
     Value: !GetAtt LearnoraBedrockFunction.Arn
+
+  FrontendURL:
+    Description: "S3 Website endpoint for Learnora frontend"
+    Value: !GetAtt FrontendBucket.WebsiteURL
