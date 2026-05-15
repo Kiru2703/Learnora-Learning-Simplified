@@ -251,7 +251,7 @@ function openPathway(id) {
 
         <div id="topicNotes">
           <div class="topic-notes-content" id="topicNotesContent">
-            ${data && data.content ? data.content : '<p style="color:var(--text-muted)"><span class="topic-loading">⏳ Generating notes…</span></p>'}
+            ${data && data.content ? data.content : '<div style="color:var(--text-muted);padding:2rem;text-align:center;"><p style="font-size:1.5rem;margin-bottom:0.5rem;">📝</p><p>Generating notes for this topic...</p><p style="font-size:0.85rem;opacity:0.7;">This may take a few seconds</p></div>'}
           </div>
         </div>
 
