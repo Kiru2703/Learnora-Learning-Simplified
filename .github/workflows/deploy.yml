@@ -21,7 +21,7 @@ jobs:
       - name: Install AWS SAM CLI
         run: pip install aws-sam-cli
 
-      - name: Deploy Backend with SAM
+      - name: Deploy Backend + Infra with SAM
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -41,7 +41,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          # Get the bucket name from stack outputs
           FRONTEND_BUCKET=$(aws cloudformation describe-stack-resources \
             --stack-name learnora-stack \
             --region ap-southeast-5 \
@@ -61,8 +60,8 @@ jobs:
             }' \
             --region ap-southeast-5
 
-          # Upload frontend files with public-read ACL
-          aws s3 sync frontend/ s3://$FRONTEND_BUCKET --delete --region ap-southeast-5 --acl public-read
+          # Upload frontend files (no ACLs, bucket policy handles public access)
+          aws s3 sync frontend/ s3://$FRONTEND_BUCKET --delete --region ap-southeast-5
 
       - name: Print stack outputs
         env:
