@@ -195,7 +195,7 @@ if __name__ == "__main__":
 import boto3 
 import json  
 
-client = boto3.client("bedrock-runtime", region_name="ap-southeast-2")  
+client = boto3.client("bedrock-runtime", region_name="ap-southeast-5")  
 
 response = client.invoke_model( 
     modelId="us.anthropic.claude-haiku-4-5-20251001-v1:0", 
@@ -229,7 +229,7 @@ for event in stream:
 
 import boto3
 
-client = boto3.client("bedrock-runtime", region_name="ap-southeast-2")  
+client = boto3.client("bedrock-runtime", region_name="ap-southeast-5")  
 
 # Load image from file 
 with open("image.jpg", "rb") as f: 
