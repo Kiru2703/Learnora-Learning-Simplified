@@ -59,63 +59,64 @@ def build_converse_content(content):
 
 
 # ── Flask routes (local dev) ──────────────────────────────────
-@app.route("/", methods=["GET"])
-def health():
-    return jsonify({"status": "ok", "model": MODEL_ID, "region": REGION})
+if HAS_FLASK:
+    @app.route("/", methods=["GET"])
+    def health():
+        return jsonify({"status": "ok", "model": MODEL_ID, "region": REGION})
 
 
-@app.route("/chat", methods=["POST", "OPTIONS"])
-def chat():
-    if request.method == "OPTIONS":
-        return jsonify({"message": "ok"})
+    @app.route("/chat", methods=["POST", "OPTIONS"])
+    def chat():
+        if request.method == "OPTIONS":
+            return jsonify({"message": "ok"})
 
-    body = request.get_json(force=True)
+        body = request.get_json(force=True)
 
-    messages    = body.get("messages", [])
-    system_text = body.get("system", "You are a helpful AI tutor.")
-    max_tokens  = min(int(body.get("max_tokens", 1024)), MAX_TOKENS)
-    temperature = float(body.get("temperature", 0.7))
-    model_id    = body.get("model_id", MODEL_ID)
+        messages    = body.get("messages", [])
+        system_text = body.get("system", "You are a helpful AI tutor.")
+        max_tokens  = min(int(body.get("max_tokens", 1024)), MAX_TOKENS)
+        temperature = float(body.get("temperature", 0.7))
+        model_id    = body.get("model_id", MODEL_ID)
 
-    if not messages:
-        return jsonify({"error": "messages array is required"}), 400
+        if not messages:
+            return jsonify({"error": "messages array is required"}), 400
 
-    converse_messages = [
-        {"role": m["role"], "content": build_converse_content(m["content"])}
-        for m in messages
-    ]
+        converse_messages = [
+            {"role": m["role"], "content": build_converse_content(m["content"])}
+            for m in messages
+        ]
 
-    try:
-        kwargs = {
-            "modelId": model_id,
-            "messages": converse_messages,
-            "inferenceConfig": {
-                "maxTokens": max_tokens,
-                "temperature": temperature,
-            },
-        }
-        if system_text:
-            kwargs["system"] = [{"text": system_text}]
+        try:
+            kwargs = {
+                "modelId": model_id,
+                "messages": converse_messages,
+                "inferenceConfig": {
+                    "maxTokens": max_tokens,
+                    "temperature": temperature,
+                },
+            }
+            if system_text:
+                kwargs["system"] = [{"text": system_text}]
 
-        response = bedrock.converse(**kwargs)
+            response = bedrock.converse(**kwargs)
 
-        output = response.get("output", {})
-        message = output.get("message", {})
-        content_blocks = message.get("content", [])
+            output = response.get("output", {})
+            message = output.get("message", {})
+            content_blocks = message.get("content", [])
 
-        content = "".join(block.get("text", "") for block in content_blocks)
+            content = "".join(block.get("text", "") for block in content_blocks)
 
-        return jsonify({"content": content})
+            return jsonify({"content": content})
 
-    except ClientError as e:
-        code = e.response["Error"]["Code"]
-        msg  = e.response["Error"]["Message"]
-        print(f"Bedrock error: {code} — {msg}")
-        return jsonify({"error": f"{code}: {msg}"}), 500
+        except ClientError as e:
+            code = e.response["Error"]["Code"]
+            msg  = e.response["Error"]["Message"]
+            print(f"Bedrock error: {code} — {msg}")
+            return jsonify({"error": f"{code}: {msg}"}), 500
 
-    except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"error": str(e)}), 500
+        except Exception as e:
+            print(f"Error: {e}")
+            return jsonify({"error": str(e)}), 500
 
 
 # ── Lambda entry point ───────────────────────────────────────
