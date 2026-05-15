@@ -114,10 +114,27 @@ def chat():
 
 
 # ── Lambda entry point ───────────────────────────────────────
+CORS_HEADERS = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+}
+
+
 def handler(event, context):
     global bedrock
     if bedrock is None:
         bedrock = boto3.client("bedrock-runtime", region_name=REGION)
+
+    # Handle OPTIONS preflight explicitly
+    http_method = event.get("httpMethod", "")
+    if http_method == "OPTIONS":
+        return {
+            "statusCode": 200,
+            "headers": CORS_HEADERS,
+            "body": json.dumps({"message": "ok"})
+        }
 
     try:
         body = json.loads(event.get("body", "{}"))
@@ -130,6 +147,7 @@ def handler(event, context):
         if not messages:
             return {
                 "statusCode": 400,
+                "headers": CORS_HEADERS,
                 "body": json.dumps({"error": "messages array is required"})
             }
 
@@ -158,13 +176,14 @@ def handler(event, context):
 
         return {
             "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
+            "headers": CORS_HEADERS,
             "body": json.dumps({"content": content})
         }
 
     except Exception as e:
         return {
             "statusCode": 500,
+            "headers": CORS_HEADERS,
             "body": json.dumps({"error": str(e)})
         }
 
