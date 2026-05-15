@@ -8,11 +8,16 @@ import json
 import base64
 import boto3
 from botocore.exceptions import ClientError
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+# Flask is only used for local development — not available in Lambda runtime
+try:
+    from flask import Flask, request, jsonify
+    from flask_cors import CORS
+    app = Flask(__name__)
+    CORS(app)
+    HAS_FLASK = True
+except ImportError:
+    HAS_FLASK = False
 
 # ── Configuration ─────────────────────────────────────────────
 REGION   = "ap-southeast-5"   # Bedrock is supported here
