@@ -111,9 +111,7 @@ When generating structured data (pathways, questions), respond with valid JSON o
    * Returns a parsed pathway object: { title, steps: [{topic, name, description}] }
    */
   async function generatePathway(query, fileContent = null) {
-    const userMsg = fileContent
-      ? `Generate a structured learning pathway from these notes:\n\n${fileContent.slice(0, 4000)}\n\nReturn JSON only.`
-      : `Generate a structured learning pathway for: "${query}"\n\nReturn JSON only in this exact format:
+    const jsonFormat = `Return JSON only in this exact format:
 {
   "title": "Topic Name Learning Pathway",
   "steps": [
@@ -122,6 +120,13 @@ When generating structured data (pathways, questions), respond with valid JSON o
   ]
 }
 Include 4-6 steps. Return JSON only, no other text.`;
+
+    let userMsg;
+    if (fileContent) {
+      userMsg = `Generate a structured learning pathway based on the following context:\n\n${fileContent.slice(0, 4000)}\n\nThe user asked: "${query}"\n\n${jsonFormat}`;
+    } else {
+      userMsg = `Generate a structured learning pathway for: "${query}"\n\n${jsonFormat}`;
+    }
 
     const raw = await _call(
       [{ role: 'user', content: userMsg }],
