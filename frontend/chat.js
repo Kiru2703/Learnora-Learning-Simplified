@@ -284,17 +284,23 @@ const ChatPage = (() => {
   // Note: Global PATHWAYS array and PATHWAY_DATA are defined in app.js
   // We access them via window scope in addToPathwayList
 
-  function getPathwayForQuery(query) {
-    const words = query.split(' ').filter(w => w.length > 3);
-    const topic = words.slice(0, 3).join(' ') || 'Your Topic';
+  function getPathwayForQuery(query, topicHint) {
+    // Use topicHint (from filename) if available, otherwise extract from query
+    let topic;
+    if (topicHint) {
+      topic = topicHint;
+    } else {
+      const words = query.split(' ').filter(w => w.length > 3);
+      topic = words.slice(0, 3).join(' ') || 'Your Topic';
+    }
     return {
       title: `${topic} Learning Pathway`,
       steps: [
         { topic: 'Topic 1', name: `Introduction to ${topic}` },
-        { topic: 'Topic 2', name: 'Core Concepts' },
-        { topic: 'Topic 3', name: 'Practical Applications' },
-        { topic: 'Topic 4', name: 'Advanced Techniques' },
-        { topic: 'Topic 5', name: 'Projects & Review' },
+        { topic: 'Topic 2', name: `Core Concepts of ${topic}` },
+        { topic: 'Topic 3', name: `Practical Applications` },
+        { topic: 'Topic 4', name: `Advanced ${topic}` },
+        { topic: 'Topic 5', name: `Projects & Review` },
       ]
     };
   }
@@ -406,17 +412,27 @@ const ChatPage = (() => {
     const query = text || 'Generate a learning pathway from my notes';
 
     if (window.BedrockAI && BedrockAI.isConfigured()) {
+      let fileTopic = null;
       try {
         let fileContent = null;
         if (fileForQuery) {
-          // Only read text-based files; binary formats (pdf, pptx, ppt, docx) can't be read as text
+          // Only read text-based files; binary formats (pdf, pptx, ppt, docx) can't be read as text in the browser
           const binaryTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
           if (!binaryTypes.includes(fileForQuery.type)) {
             try { fileContent = await fileForQuery.text(); } catch (_) {}
           }
-          // For binary files, use the filename as context hint
-          if (!fileContent && fileForQuery.name) {
-            fileContent = `[Uploaded file: ${fileForQuery.name}] — Generate a learning pathway based on this file's topic.`;
+          // For binary files, extract the topic from the filename
+          if (!fileContent) {
+            // Strip extension and clean up filename to get the topic
+            const cleanName = fileForQuery.name
+              .replace(/\.[^.]+$/, '')           // remove extension
+              .replace(/[-_]/g, ' ')             // replace dashes/underscores with spaces
+              .replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '') // remove chapter/module prefixes
+              .replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '') // remove roman numerals
+              .replace(/\s+/g, ' ')              // collapse whitespace
+              .trim();
+            fileTopic = cleanName || fileForQuery.name.replace(/\.[^.]+$/, '');
+            fileContent = `The student uploaded a file titled "${fileForQuery.name}". The topic is: ${fileTopic}. Generate a detailed learning pathway for this topic.`;
           }
         }
 
@@ -438,7 +454,7 @@ const ChatPage = (() => {
       } catch (err) {
         console.error('Bedrock error:', err);
         removeTyping();
-        const fallbackPathway = getPathwayForQuery(query);
+        const fallbackPathway = getPathwayForQuery(query, fileTopic);
         const fallbackPwId = addToPathwayList(fallbackPathway);
         addMessage('assistant', `⚠️ AI error: ${escapeHtml(err.message)}<br><br>Falling back to offline mode.<br><br>${buildPathwayHTML(fallbackPathway, fallbackPwId)}`, true);
       }
