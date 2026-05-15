@@ -9,7 +9,7 @@ Globals:
     Runtime: python3.12
     Environment:
       Variables:
-        AWS_REGION_NAME: ap-southeast-2
+        AWS_REGION_NAME: ap-southeast-5
         BEDROCK_MODEL_ID: global.anthropic.claude-haiku-4-5-20251001-v1:0
         MAX_TOKENS: "2048"
         ALLOWED_ORIGINS: "*"
