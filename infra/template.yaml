@@ -24,7 +24,7 @@ Resources:
       Handler: lambda_handler.handler        # file.function
       CodeUri: backend                       # points to backend folder
       Description: Proxies Learnora AI requests to AWS Bedrock (Claude 3 Haiku)
-      Role: arn:aws:iam::<YOUR_SANDBOX_ACCOUNT_ID>:role/LabRole   # replace with your sandbox LabRole ARN
+      Role: arn:aws:iam::443407534411:role/LabRole   # replace with your sandbox LabRole ARN
       Events:
         ChatPost:
           Type: Api
