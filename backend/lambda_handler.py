@@ -178,7 +178,6 @@ if __name__ == "__main__":
 
     os.environ["AWS_ACCESS_KEY_ID"]     = ""  # ← paste here
     os.environ["AWS_SECRET_ACCESS_KEY"] = ""  # ← paste here
-    os.environ["AWS_SESSION_TOKEN"]     = ""  # ← paste here
 
     # Create client AFTER credentials are set
     bedrock = boto3.client("bedrock-runtime", region_name=REGION)
