@@ -1,75 +1,131 @@
-name: Deploy Learnora Fullstack
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Learnora — AWS Bedrock proxy (Lambda + API Gateway + Frontend Hosting)
 
-on:
-  push:
-    branches:
-      - main
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: python3.12
+    Environment:
+      Variables:
+        AWS_REGION_NAME: ap-southeast-5
+        BEDROCK_MODEL_ID: global.anthropic.claude-haiku-4-5-20251001-v1:0
+        MAX_TOKENS: "2048"
+        ALLOWED_ORIGINS: "*"
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+Resources:
 
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+  # ── IAM Role for Lambda ──────────────────────────────────────
+  LearnoraLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: learnora-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
+        - arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+  # ── Lambda function ──────────────────────────────────────────
+  LearnoraBedrockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: learnora-bedrock-proxy
+      Handler: lambda_handler.handler
+      CodeUri: ../backend
+      Description: Proxies Learnora AI requests to AWS Bedrock (Claude 3 Haiku)
+      Role: !GetAtt LearnoraLambdaRole.Arn
+      Events:
+        ChatPost:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LearnoraApi
+            Path: /chat
+            Method: POST
+        ChatOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LearnoraApi
+            Path: /chat
+            Method: OPTIONS
 
-      - name: Install AWS SAM CLI
-        run: pip install aws-sam-cli
+  # ── API Gateway ──────────────────────────────────────────────
+  LearnoraApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: learnora-api
+      StageName: prod
+      Cors:
+        AllowMethods: "'POST, OPTIONS'"
+        AllowHeaders: "'Content-Type, Authorization'"
+        AllowOrigin: "'*'"
 
-      - name: Deploy Backend + Infra with SAM
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          SAM_DEPLOY_BUCKET: ${{ secrets.SAM_DEPLOY_BUCKET }}
-        run: |
-          sam deploy \
-            --template-file infra/template.yaml \
-            --stack-name learnora-stack \
-            --s3-bucket $SAM_DEPLOY_BUCKET \
-            --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-            --region ap-southeast-5 \
-            --no-confirm-changeset \
-            --no-fail-on-empty-changeset
+  # ── S3 Bucket for Frontend ───────────────────────────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
 
-      - name: Upload Frontend to S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          FRONTEND_BUCKET=$(aws cloudformation describe-stack-resources \
-            --stack-name learnora-stack \
-            --region ap-southeast-5 \
-            --query "StackResources[?LogicalResourceId=='FrontendBucket'].PhysicalResourceId" \
-            --output text)
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub "${FrontendBucket.Arn}/*"
 
-          echo "Uploading frontend files to bucket: $FRONTEND_BUCKET"
+  # ── CloudFront Distribution ──────────────────────────────────
+  FrontendCDN:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Origins:
+          - Id: S3Origin
+            DomainName: !Sub "${FrontendBucket}.s3-website.${AWS::Region}.amazonaws.com"
+            CustomOriginConfig:
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          ForwardedValues:
+            QueryString: false
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
 
-          # Disable Block Public Access at bucket level
-          aws s3api put-public-access-block \
-            --bucket $FRONTEND_BUCKET \
-            --public-access-block-configuration '{
-              "BlockPublicAcls": false,
-              "IgnorePublicAcls": false,
-              "BlockPublicPolicy": false,
-              "RestrictPublicBuckets": false
-            }' \
-            --region ap-southeast-5
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint — paste this into frontend/index.html as LEARNORA_API_URL"
+    Value: !Sub "https://${LearnoraApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
 
-          # Upload frontend files (no ACLs, bucket policy handles public access)
-          aws s3 sync frontend/ s3://$FRONTEND_BUCKET --delete --region ap-southeast-5
+  FunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt LearnoraBedrockFunction.Arn
 
-      - name: Print stack outputs
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws cloudformation describe-stacks \
-            --stack-name learnora-stack \
-            --region ap-southeast-5 \
-            --query "Stacks[0].Outputs" \
-            --output table
+  FrontendURL:
+    Description: "S3 Website endpoint for Learnora frontend"
+    Value: !GetAtt FrontendBucket.WebsiteURL
+
+  CloudFrontURL:
+    Description: "CloudFront HTTPS URL — share this with anyone"
+    Value: !Sub "https://${FrontendCDN.DomainName}"
