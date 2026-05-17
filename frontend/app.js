@@ -343,7 +343,9 @@ Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <code>, 
 Include: overview, key concepts, detailed explanations, examples, and a summary.
 Keep it educational, thorough, and well-structured (500-800 words).`;
 
-    BedrockAI.chat(fullPrompt).then(html => {
+    BedrockAI.chat(fullPrompt).then(rawHtml => {
+      // Strip markdown code fences if present (```html ... ```)
+      const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
       // Store generated content
       if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: topicTitle, subtitle: '', progress: 50, content: null };
       PATHWAY_DATA[id].content = html;
