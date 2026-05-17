@@ -328,26 +328,27 @@ function openPathway(id) {
 
   // Auto-generate notes via Bedrock if content is not yet loaded
   if ((!data || !data.content) && window.BedrockAI && BedrockAI.isConfigured()) {
-    const topicTitle = topicMeta?.title || 'Topic';
-    const pathwayName = parentPathway?.name || 'Pathway';
+    const noteTopicTitle = topicMeta?.title || 'Topic';
+    const notePathwayName = parentPathway?.name || 'Pathway';
     const sourceTopic = parentPathway?.sourceTopic || null;
 
     // If the pathway was created from an uploaded file, include the source topic for richer context
     const notePrompt = sourceTopic
-      ? `Generate comprehensive study notes for the topic "${topicTitle}" which is part of a course on "${sourceTopic}" (pathway: "${pathwayName}").`
-      : `Generate comprehensive study notes for the topic "${topicTitle}" (part of the "${pathwayName}" pathway).`;
+      ? `Generate comprehensive study notes for the topic "${noteTopicTitle}" which is part of a course on "${sourceTopic}" (pathway: "${notePathwayName}").`
+      : `Generate comprehensive study notes for the topic "${noteTopicTitle}" (part of the "${notePathwayName}" pathway).`;
 
     const fullPrompt = `${notePrompt}
 
 Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <code>, <pre><code>.
 Include: overview, key concepts, detailed explanations, examples, and a summary.
-Keep it educational, thorough, and well-structured (500-800 words).`;
+Keep it educational, thorough, and well-structured (500-800 words).
+Do NOT wrap the output in markdown code fences. Output raw HTML only.`;
 
     BedrockAI.chat(fullPrompt).then(rawHtml => {
       // Strip markdown code fences if present (```html ... ```)
       const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
       // Store generated content
-      if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: topicTitle, subtitle: '', progress: 50, content: null };
+      if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: noteTopicTitle, subtitle: '', progress: 50, content: null };
       PATHWAY_DATA[id].content = html;
       // Update the DOM if still on this topic
       const notesEl = document.getElementById('topicNotesContent');
