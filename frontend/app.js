@@ -339,27 +339,26 @@ function openPathway(id) {
 
     const fullPrompt = `${notePrompt}
 
-Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>, <code>, <pre><code>.
-Include: overview, key concepts, detailed explanations, examples, and a summary.
-Keep it educational, thorough, and well-structured (500-800 words).
-Do NOT wrap the output in markdown code fences. Output raw HTML only.`;
+Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>.
+Include: overview, key concepts, and examples.
+Keep it concise (200-300 words). Do NOT use markdown code fences. Output raw HTML only.`;
 
     BedrockAI.chat(fullPrompt).then(rawHtml => {
-      // Strip markdown code fences if present (```html ... ```)
+      // Strip markdown code fences if present
       const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
       // Store generated content
       if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: noteTopicTitle, subtitle: '', progress: 50, content: null };
       PATHWAY_DATA[id].content = html;
-      // Update the DOM if still on this topic
+      // Update the DOM
       const notesEl = document.getElementById('topicNotesContent');
-      if (notesEl && pathwayState.activeTopic === id) {
+      if (notesEl) {
         notesEl.innerHTML = html;
       }
     }).catch(err => {
       console.error('Failed to generate notes:', err);
       const notesEl = document.getElementById('topicNotesContent');
-      if (notesEl && pathwayState.activeTopic === id) {
-        notesEl.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes. Try asking in the doubts panel.</p>';
+      if (notesEl) {
+        notesEl.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
       }
     });
   }
