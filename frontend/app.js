@@ -341,9 +341,9 @@ function openPathway(id) {
 
 Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>.
 Include: overview, key concepts, and examples.
-Keep it concise (200-300 words). Do NOT use markdown code fences. Output raw HTML only.`;
+Keep it concise (150-200 words). Do NOT use markdown code fences. Output raw HTML only.`;
 
-    BedrockAI.chat(fullPrompt).then(rawHtml => {
+    BedrockAI.chat(fullPrompt, { history: [] }).then(rawHtml => {
       // Strip markdown code fences if present
       const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
       // Store generated content
