@@ -326,43 +326,31 @@ function openPathway(id) {
   if (window.DoubtsBar) DoubtsBar.init(id);
   closeSidebar();
 
-  // Auto-generate notes via Bedrock if content is not yet loaded
-  if ((!data || !data.content) && window.BedrockAI && BedrockAI.isConfigured()) {
-    const noteTopicTitle = topicMeta?.title || 'Topic';
-    const notePathwayName = parentPathway?.name || 'Pathway';
-    const sourceTopic = parentPathway?.sourceTopic || null;
+  // Auto-generate notes via Bedrock after a short delay to ensure DOM is ready
+  setTimeout(() => {
+    const notesEl = document.getElementById('topicNotesContent');
+    if (notesEl && notesEl.innerHTML.includes('Generating')) {
+      const title = document.querySelector('.topic-title')?.textContent || 'Topic';
+      const pw = parentPathway?.name || 'Pathway';
+      const src = parentPathway?.sourceTopic || null;
+      const prompt = src
+        ? `Generate brief study notes for "${title}" (part of a course on "${src}"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.`
+        : `Generate brief study notes for "${title}" (pathway: "${pw}"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.`;
 
-    // If the pathway was created from an uploaded file, include the source topic for richer context
-    const notePrompt = sourceTopic
-      ? `Generate comprehensive study notes for the topic "${noteTopicTitle}" which is part of a course on "${sourceTopic}" (pathway: "${notePathwayName}").`
-      : `Generate comprehensive study notes for the topic "${noteTopicTitle}" (part of the "${notePathwayName}" pathway).`;
-
-    const fullPrompt = `${notePrompt}
-
-Format as clean HTML. Use <h2> for title, <p> for text, <ul><li> for lists, <strong> for key terms.
-Be brief: 3-4 short paragraphs max. No markdown fences. Raw HTML only.`;
-
-    console.log('[Learnora] Generating notes for:', noteTopicTitle);
-    BedrockAI.chat(fullPrompt, { history: [] }).then(rawHtml => {
-      console.log('[Learnora] Notes received, length:', rawHtml.length);
-      // Strip markdown code fences if present
-      const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
-      // Store generated content
-      if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = { title: noteTopicTitle, subtitle: '', progress: 50, content: null };
-      PATHWAY_DATA[id].content = html;
-      // Update the DOM
-      const notesEl = document.getElementById('topicNotesContent');
-      if (notesEl) {
-        notesEl.innerHTML = html;
+      if (window.BedrockAI && BedrockAI.isConfigured()) {
+        BedrockAI.chat(prompt, { history: [], maxTokens: 400 }).then(rawHtml => {
+          const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
+          if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = {};
+          PATHWAY_DATA[id].content = html;
+          const el = document.getElementById('topicNotesContent');
+          if (el) el.innerHTML = html;
+        }).catch(err => {
+          const el = document.getElementById('topicNotesContent');
+          if (el) el.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
+        });
       }
-    }).catch(err => {
-      console.error('[Learnora] Failed to generate notes:', err);
-      const notesEl = document.getElementById('topicNotesContent');
-      if (notesEl) {
-        notesEl.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
-      }
-    });
-  }
+    }
+  }, 500);
 }
 
 // ── Pathway roadmap view ──────────────────────────────────────
