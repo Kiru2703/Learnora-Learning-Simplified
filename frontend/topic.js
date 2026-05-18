@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    topic.js — Topic view, Quick Question, Exam Simulator
    ============================================================ */
 
@@ -243,6 +243,44 @@ const TopicExam = (() => {
     _pendingFileSize = null;
 
     if (window.closeSidebar) closeSidebar();
+
+    // Auto-generate questions via Bedrock if none exist for this topic
+    if (questions.length === 0 && window.LEARNORA_API_URL) {
+      var _examTopicId = topicId;
+      var _examTitle = topicTitle;
+      var _examPrompt = 'Generate 4 exam questions for the topic "' + _examTitle + '". Return JSON only in this exact format: [{"type":"mcq","text":"Question?","opts":["A","B","C","D"],"correct":0},{"type":"short","text":"Question?","answer":"keyword","hint":"Hint."}]. Mix MCQ and short-answer. Return JSON array only, no other text.';
+
+      fetch(window.LEARNORA_API_URL + '/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+          system: 'You are an exam question generator. Return valid JSON arrays only.',
+          messages: [{ role: 'user', content: _examPrompt }],
+          max_tokens: 800,
+          temperature: 0.5
+        })
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(json) {
+        var raw = (json.content || '').replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+        try {
+          var qs = JSON.parse(raw);
+          if (!Array.isArray(qs)) { var m = raw.match(/\[[\s\S]*\]/); if (m) qs = JSON.parse(m[0]); }
+          EXAM_QUESTIONS[_examTopicId] = qs;
+          // Re-render questions
+          var container = document.getElementById('examQuestions');
+          if (container) {
+            container.innerHTML = qs.map(function(q, i) { return _buildCard(q, i); }).join('');
+          }
+          var countEl = document.getElementById('examQCount');
+          if (countEl) countEl.textContent = qs.length;
+          var badge = document.getElementById('examScoreBadge');
+          if (badge) badge.textContent = 'Score: 0 / ' + qs.length;
+        } catch(e) { console.error('Failed to parse questions:', e); }
+      })
+      .catch(function(err) { console.error('Failed to generate questions:', err); });
+    }
   }
 
   function _buildCard(q, i) {
@@ -420,23 +458,40 @@ const TopicExam = (() => {
 
   function generateMore() {
     const container = document.getElementById('examQuestions');
-    if (!container) return;
-    const baseIdx = container.querySelectorAll('.exam-question-card').length;
-    const extra = [
-      { type: 'mcq',   text: 'Which of the following best describes a model?',
-        opts: ['A physical replica','A mathematical representation','A dataset','A programming language'], correct: 1 },
-      { type: 'short', text: 'What is the purpose of a validation set?',
-        answer: 'validation', hint: 'Used to tune hyperparameters and prevent overfitting.' },
-    ];
-    extra.forEach((q, i) => {
-      container.insertAdjacentHTML('beforeend', _buildCard(q, baseIdx + i));
-    });
-    // Update question count in header
-    const countEl = document.getElementById('examQCount');
-    if (countEl) countEl.textContent = container.querySelectorAll('.exam-question-card').length;
-    _updateScore();
-    // Scroll to new questions
-    container.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (!container || !window.LEARNORA_API_URL) return;
+    const topicTitle = window.PATHWAY_DATA?.[currentTopicId]?.title || 'Topic';
+    var prompt = 'Generate 2 more exam questions for "' + topicTitle + '". Return JSON array only: [{"type":"mcq","text":"Q?","opts":["A","B","C","D"],"correct":0},{"type":"short","text":"Q?","answer":"keyword","hint":"Hint."}]. No other text.';
+
+    fetch(window.LEARNORA_API_URL + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+        system: 'You are an exam question generator. Return valid JSON arrays only.',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 500,
+        temperature: 0.6
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      var raw = (json.content || '').replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      try {
+        var qs = JSON.parse(raw);
+        if (!Array.isArray(qs)) { var m = raw.match(/\[[\s\S]*\]/); if (m) qs = JSON.parse(m[0]); }
+        var baseIdx = container.querySelectorAll('.exam-question-card').length;
+        qs.forEach(function(q, i) {
+          container.insertAdjacentHTML('beforeend', _buildCard(q, baseIdx + i));
+        });
+        if (!EXAM_QUESTIONS[currentTopicId]) EXAM_QUESTIONS[currentTopicId] = [];
+        EXAM_QUESTIONS[currentTopicId].push.apply(EXAM_QUESTIONS[currentTopicId], qs);
+        var countEl = document.getElementById('examQCount');
+        if (countEl) countEl.textContent = container.querySelectorAll('.exam-question-card').length;
+        _updateScore();
+        container.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch(e) { console.error('Failed to parse extra questions:', e); }
+    })
+    .catch(function(err) { console.error('Failed to generate more questions:', err); });
   }
 
   function handleFileSelect(event) {
