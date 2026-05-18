@@ -431,6 +431,17 @@ const ChatPage = (() => {
         if (fileForQuery && !isDocumentFile) {
           // Text-based files (.txt, .md): read content directly and send to AI
           try { fileContent = await fileForQuery.text(); } catch (_) {}
+          // Also extract topic from filename for fallback
+          const cleanName = fileForQuery.name
+            .replace(/\.[^.]+$/, '')
+            .replace(/[-_]/g, ' ')
+            .replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '')
+            .replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '')
+            .replace(/\bVE\b/gi, '')
+            .replace(/\bMQF\b/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+          fileTopic = cleanName || fileForQuery.name.replace(/\.[^.]+$/, '');
         }
 
         if (isDocumentFile) {
@@ -452,9 +463,9 @@ const ChatPage = (() => {
 
         if (isPathwayRequest || fileContent) {
           // Use direct fetch for pathway generation (same approach that works for notes)
-          const jsonFormat = 'Return JSON only in this exact format: {"title":"Topic Learning Pathway","steps":[{"topic":"Topic 1","name":"Step name","description":"One sentence"}]}. Include 4-6 steps. Return JSON only.';
+          const jsonFormat = 'Return JSON only in this exact format: {"title":"Topic Learning Pathway","steps":[{"topic":"Topic 1","name":"Step name","description":"One sentence"}]}. Include 4-6 steps based on the actual content provided. Use specific topic names from the content, not generic ones. Return JSON only.';
           const userMsg = fileContent
-            ? 'Generate a structured learning pathway based on: ' + fileContent.slice(0, 2000) + '\n\nUser asked: "' + query + '"\n\n' + jsonFormat
+            ? 'Generate a structured learning pathway based on these notes:\n\n' + fileContent.slice(0, 3000) + '\n\nUser asked: "' + query + '"\n\n' + jsonFormat
             : 'Generate a structured learning pathway for: "' + query + '"\n\n' + jsonFormat;
 
           const pathRes = await fetch(window.LEARNORA_API_URL + '/chat', {
