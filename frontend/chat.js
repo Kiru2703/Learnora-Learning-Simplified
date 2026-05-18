@@ -291,8 +291,12 @@ const ChatPage = (() => {
     if (topicHint) {
       topic = topicHint;
     } else {
-      const words = query.split(' ').filter(w => w.length > 3);
-      topic = words.slice(0, 3).join(' ') || 'Your Topic';
+      // Strip common prefixes
+      topic = query
+        .replace(/^(teach me|learn|study|make me a pathway for|make a pathway for|generate a? ?learning pathway from my notes|generate|create|build|make)\s*/i, '')
+        .replace(/^(a |an |the )/i, '')
+        .replace(/\s*(pathway|plan|roadmap|course|curriculum|guide)\s*$/i, '')
+        .trim() || 'Your Topic';
     }
     return {
       title: `${topic} Learning Pathway`,
@@ -447,16 +451,55 @@ const ChatPage = (() => {
         const isPathwayRequest = /pathway|plan|roadmap|learn|study|course|curriculum|teach me|how to learn|guide|make/i.test(query);
 
         if (isPathwayRequest || fileContent) {
-          const pathway = await BedrockAI.generatePathway(query, fileContent);
-          removeTyping();
-          const pwId = addToPathwayList(pathway, fileTopic);
-          const intro = fileForQuery
-            ? `I've analysed "<strong>${escapeHtml(fileForQuery.name)}</strong>" and built a learning pathway for <strong>${escapeHtml(fileTopic)}</strong>. Click any topic to start studying!`
-            : "I've built a personalised learning pathway for you. Click any topic to start studying!";
-          addMessage('assistant', `${intro}<br><br>${buildPathwayHTML(pathway, pwId)}`, true);
+          // Use direct fetch for pathway generation (same approach that works for notes)
+          const jsonFormat = 'Return JSON only in this exact format: {"title":"Topic Learning Pathway","steps":[{"topic":"Topic 1","name":"Step name","description":"One sentence"}]}. Include 4-6 steps. Return JSON only.';
+          const userMsg = fileContent
+            ? 'Generate a structured learning pathway based on: ' + fileContent.slice(0, 2000) + '\n\nUser asked: "' + query + '"\n\n' + jsonFormat
+            : 'Generate a structured learning pathway for: "' + query + '"\n\n' + jsonFormat;
+
+          const pathRes = await fetch(window.LEARNORA_API_URL + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+              system: 'You are an AI tutor. When generating structured data, respond with valid JSON only.',
+              messages: [{ role: 'user', content: userMsg }],
+              max_tokens: 800,
+              temperature: 0.4
+            })
+          });
+          const pathJson = await pathRes.json();
+          const rawContent = (pathJson.content || '').replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+          let pathway;
+          try { pathway = JSON.parse(rawContent); }
+          catch { const m = rawContent.match(/\{[\s\S]*\}/); pathway = m ? JSON.parse(m[0]) : null; }
+
+          if (pathway && pathway.steps) {
+            removeTyping();
+            const pwId = addToPathwayList(pathway, fileTopic);
+            const intro = fileForQuery
+              ? `I've analysed "<strong>${escapeHtml(fileForQuery.name)}</strong>" and built a learning pathway for <strong>${escapeHtml(fileTopic)}</strong>. Click any topic to start studying!`
+              : "I've built a personalised learning pathway for you. Click any topic to start studying!";
+            addMessage('assistant', `${intro}<br><br>${buildPathwayHTML(pathway, pwId)}`, true);
+          } else {
+            throw new Error('Could not parse pathway response');
+          }
         } else {
+          // General chat - use direct fetch
+          const chatRes = await fetch(window.LEARNORA_API_URL + '/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+              system: 'You are Learnora Copilot, an expert AI tutor. Be concise and helpful.',
+              messages: [..._chatHistory.slice(-10), { role: 'user', content: query }],
+              max_tokens: 512,
+              temperature: 0.7
+            })
+          });
+          const chatJson = await chatRes.json();
+          const reply = chatJson.content || '';
           _chatHistory.push({ role: 'user', content: query });
-          const reply = await BedrockAI.chat(query, { history: _chatHistory.slice(-10) });
           _chatHistory.push({ role: 'assistant', content: reply });
           removeTyping();
           addMessage('assistant', _formatMarkdown(reply), true);
