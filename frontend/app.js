@@ -88,6 +88,9 @@ function navigateTo(page) {
         msgs.innerHTML = '';
         cc.classList.remove('has-messages');
       }
+      // Also hide the pathway page if it exists
+      const pw = document.getElementById('page-pathway');
+      if (pw) pw.classList.remove('active');
       break;
     }
   }
