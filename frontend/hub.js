@@ -1257,13 +1257,15 @@ const HubPage = (() => {
           </div>
         </div>
 
-        <!-- AI Assistant (fixed at bottom) -->
-        <div style="position:fixed;bottom:0;left:160px;right:0;padding:12px 24px;background:var(--bg-secondary,#1e1e2e);border-top:1px solid var(--border,#444);z-index:50;">
-          <div id="groupAiMessages" style="max-height:80px;overflow-y:auto;margin-bottom:8px;font-size:13px;color:var(--text-secondary,#ccc);"></div>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <span style="font-size:14px;">🤖</span>
-            <input type="text" id="groupAiInput" placeholder="Ask AI for study suggestions..." style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupAi()"/>
-            <button onclick="HubPage.sendGroupAi()" style="padding:10px 16px;border-radius:8px;border:none;background:var(--accent,#a855f7);color:#fff;cursor:pointer;font-size:13px;font-weight:500;">Send</button>
+        <!-- AI Assistant (fixed at bottom like doubts bar) -->
+        <div style="position:fixed;bottom:0;left:280px;right:0;background:var(--bg-primary,#13131f);border-top:1px solid var(--border,#333);padding:16px 24px;z-index:50;">
+          <div id="groupAiMessages" style="max-height:60px;overflow-y:auto;margin-bottom:8px;font-size:13px;color:var(--text-secondary,#ccc);"></div>
+          <div style="display:flex;align-items:center;gap:10px;background:var(--bg-secondary,#1e1e2e);border:1px solid var(--border,#444);border-radius:12px;padding:4px 4px 4px 16px;">
+            <span style="color:var(--text-muted);font-size:13px;">🤖</span>
+            <input type="text" id="groupAiInput" placeholder="Ask AI for study suggestions..." style="flex:1;padding:10px 0;border:none;background:transparent;color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupAi()"/>
+            <button onclick="HubPage.sendGroupAi()" style="padding:10px 18px;border-radius:10px;border:none;background:var(--accent,#a855f7);color:#fff;cursor:pointer;font-size:13px;font-weight:500;display:flex;align-items:center;gap:4px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
           </div>
         </div>
 
