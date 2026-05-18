@@ -99,5 +99,5 @@ Outputs:
     Value: !GetAtt LearnoraBedrockFunction.Arn
 
   FrontendURL:
-    Description: "S3 Website endpoint for Learnora frontend"
-    Value: !GetAtt FrontendBucket.WebsiteURL
+    Description: "Public HTTPS URL for Learnora frontend"
+    Value: !Sub "https://${FrontendBucket}.s3.${AWS::Region}.amazonaws.com/index.html"
