@@ -994,7 +994,8 @@ window._toggleNarration = function() {
     var btn = document.getElementById('narrateBtnText');
     if (btn) btn.textContent = 'Start Narration';
     var status = document.getElementById('narrateStatus');
-    if (status) status.textContent = 'Error playing audio';
+    if (status) status.textContent = 'Narration Stopped';
+    setTimeout(function() { if (status) status.textContent = ''; }, 3000);
   };
 
   speechSynthesis.speak(utterance);
