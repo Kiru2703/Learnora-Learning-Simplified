@@ -49,7 +49,16 @@ const ExamPage = (() => {
       <div class="exam-page">
         <div class="exam-page-header">
           <h1>⚡ Exam Simulator</h1>
-          <p>Upload your notes and auto-generate practice questions.</p>
+          <p>Type a topic or upload your notes to auto-generate practice questions.</p>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="examTopicInput" placeholder="Enter a topic (e.g. Introduction to Networking)..." style="flex:1;padding:12px 16px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')ExamPage.generate()"/>
+            <button class="exam-generate-btn" style="margin:0;padding:12px 20px;" onclick="ExamPage.generate()">
+              <span>✦</span> Generate
+            </button>
+          </div>
         </div>
 
         <div class="upload-zone" id="uploadZone">
@@ -60,10 +69,6 @@ const ExamPage = (() => {
         </div>
 
         <div id="uploadedFileInfo" style="display:none"></div>
-
-        <button class="exam-generate-btn" id="generateBtn" onclick="ExamPage.generate()">
-          <span>✦</span> Generate Questions
-        </button>
 
         <div id="examQuestionsContainer"></div>
       </div>
@@ -122,23 +127,61 @@ const ExamPage = (() => {
   }
 
   function generate() {
-    const btn = document.getElementById('generateBtn');
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span> Generating...';
+    var topicInput = document.getElementById('examTopicInput');
+    var topic = topicInput ? topicInput.value.trim() : '';
+
+    // If no topic typed, try to get from uploaded file name
+    if (!topic && uploadedFile) {
+      topic = uploadedFile.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\b(chapter|ch|module|mod|unit|lesson|lec|lecture)\s*\d*/gi, '').replace(/\b(vi|vii|viii|ix|iv|v|i{1,3})\b/gi, '').replace(/\bVE\b/gi, '').replace(/\s+/g, ' ').trim();
     }
 
-    questions = [...SAMPLE_QUESTIONS];
-    answers = {};
-    score = 0;
+    if (!topic) {
+      topic = 'General Knowledge';
+    }
 
-    setTimeout(() => {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<span>✦</span> Regenerate Questions';
+    // Show loading
+    var container = document.getElementById('examQuestionsContainer');
+    if (container) {
+      container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-muted);"><div class="exam-loading-spinner"></div><p style="margin-top:1rem;">Generating questions for "' + topic + '"...</p></div>';
+    }
+
+    var prompt = 'Generate 5 exam questions for the topic "' + topic + '". Return JSON only in this exact format: [{"type":"mcq","text":"Question?","options":["A. opt1","B. opt2","C. opt3","D. opt4"],"correct":0},{"type":"short","text":"Question?","answer":"keyword","hint":"Hint."}]. Mix 3 MCQ and 2 short-answer. Return JSON array only.';
+
+    fetch(window.LEARNORA_API_URL + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+        system: 'You are an exam question generator. Return valid JSON arrays only.',
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 800,
+        temperature: 0.5
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      var raw = (json.content || '').replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      try {
+        var qs = JSON.parse(raw);
+        if (!Array.isArray(qs)) { var m = raw.match(/\[[\s\S]*\]/); if (m) qs = JSON.parse(m[0]); }
+        questions = qs;
+        answers = {};
+        score = 0;
+        renderQuestions();
+      } catch(e) {
+        // Fallback to sample questions
+        questions = [...SAMPLE_QUESTIONS];
+        answers = {};
+        score = 0;
+        renderQuestions();
       }
+    })
+    .catch(function(err) {
+      questions = [...SAMPLE_QUESTIONS];
+      answers = {};
+      score = 0;
       renderQuestions();
-    }, 1500);
+    });
   }
 
   function renderQuestions() {
