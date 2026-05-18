@@ -155,12 +155,7 @@ const ProfilePage = (() => {
         priority: d.priority,
       }));
     } catch {}
-    return [
-      { time: '9:00 AM',  task: 'ML Lecture Review',    priority: 'high'   },
-      { time: '11:00 AM', task: 'Python Practice',       priority: 'medium' },
-      { time: '2:00 PM',  task: 'Data Science HW',       priority: 'high'   },
-      { time: '4:00 PM',  task: 'Group Study Session',   priority: 'low'    },
-    ];
+    return [];
   }
 
   // ── Render ─────────────────────────────────────────────────
