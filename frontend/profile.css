@@ -1,546 +1,560 @@
 /* ============================================================
-   profile.css — Profile Dashboard styles
+   planner.css — Deadline Planner styles
    ============================================================ */
 
-.profile-page {
+.planner-page {
   max-width: 1000px;
   margin: 0 auto;
 }
 
-/* Hero section */
-.profile-hero {
-  background: var(--gradient-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-xl);
-  padding: 32px;
-  margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
+.planner-page-header {
+  margin-bottom: 28px;
 }
 
-.profile-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px;
-  right: -60px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(124,58,237,0.2), transparent 70%);
-  pointer-events: none;
-}
-
-.profile-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -40px;
-  left: 40%;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(13,148,136,0.15), transparent 70%);
-  pointer-events: none;
-}
-
-.profile-hero-inner {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  position: relative;
-  z-index: 1;
-}
-
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--gradient-btn);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
-  border: 3px solid rgba(124, 58, 237, 0.4);
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.profile-handle {
-  font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-
-.profile-badges {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.profile-hero-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-}
-
-/* Stats row */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  text-align: center;
-  transition: var(--transition);
-}
-
-.stat-card:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(124, 58, 237, 0.4);
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.stat-value {
+.planner-page-header h1 {
   font-size: 28px;
   font-weight: 800;
   background: var(--gradient-main);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
-.stat-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-/* Courses section */
-.courses-section {
-  margin-bottom: 24px;
-}
-
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.course-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  transition: var(--transition);
-  cursor: pointer;
-}
-
-.course-card:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(124, 58, 237, 0.4);
-  transform: translateY(-2px);
-}
-
-.course-icon {
-  font-size: 28px;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.course-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.course-progress-label {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.course-progress-bar {
-  height: 4px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.course-progress-fill {
-  height: 100%;
-  border-radius: 2px;
-  background: var(--gradient-btn);
-}
-
-/* Bottom row */
-.profile-bottom-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-/* Schedule */
-.schedule-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-}
-
-.schedule-section h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.schedule-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.schedule-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-}
-
-.schedule-time {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-accent);
-  min-width: 60px;
-}
-
-.schedule-task {
-  flex: 1;
-  font-size: 13px;
+.planner-page-header p {
   color: var(--text-secondary);
+  font-size: 15px;
 }
 
-.schedule-priority {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.schedule-priority.low    { background: var(--priority-low); }
-.schedule-priority.medium { background: var(--priority-medium); }
-.schedule-priority.high   { background: var(--priority-high); }
-
-/* Friends widget */
-.friends-section {
+/* Add deadline form */
+.add-deadline-form {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 24px;
+  margin-bottom: 28px;
 }
 
-.friends-section h3 {
+.add-deadline-form h3 {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.friends-list {
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.form-label-optional {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 6px;
 }
 
-.friend-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  transition: var(--transition);
-}
-
-.friend-item:hover {
-  background: rgba(124, 58, 237, 0.06);
-}
-
-.friend-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.friend-info {
-  flex: 1;
-}
-
-.friend-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.friend-status {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-.friend-online-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--priority-low);
-  flex-shrink: 0;
-}
-
-.friend-online-dot.offline {
-  background: var(--text-muted);
-}
-
-.referral-box {
-  background: rgba(124, 58, 237, 0.08);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 14px;
-}
-
-.referral-label {
+.form-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 8px;
 }
 
-.referral-link-row {
-  display: flex;
-  gap: 8px;
-}
-
-.referral-link {
-  flex: 1;
+.form-input,
+.form-select {
   background: var(--bg-input);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  color: var(--text-accent);
-  font-size: 12px;
-  font-family: monospace;
+  padding: 10px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
   outline: none;
-  cursor: text;
+  transition: var(--transition);
+  width: 100%;
 }
 
-.copy-btn {
-  padding: 8px 14px;
+.form-input:focus,
+.form-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236060a0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+.form-select option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.add-btn {
+  padding: 10px 20px;
   background: var(--gradient-btn);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   font-family: inherit;
   white-space: nowrap;
+  height: 40px;
 }
 
-.copy-btn:hover {
+.add-btn:hover {
   background: var(--gradient-btn-hover);
+  box-shadow: var(--shadow-glow);
 }
 
-@media (max-width: 768px) {
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .profile-hero-inner {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .profile-hero-actions {
-    align-items: center;
-  }
-
-  .profile-bottom-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Share tooltip ── */
-.share-tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
+/* Calendar view */
+.planner-calendar-section {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 5px 12px;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.planner-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.planner-cal-title {
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text-primary);
+}
+
+.planner-cal-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.planner-cal-nav {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.planner-cal-nav:hover {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.view-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.view-toggle-btn {
+  padding: 6px 14px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.view-toggle-btn.active {
+  background: var(--gradient-btn);
+  color: #fff;
+}
+
+/* Month view grid */
+.planner-month-grid {
+  width: 100%;
+}
+
+.planner-day-names {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.planner-day-names span {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.planner-days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.planner-day-cell {
+  min-height: 80px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.planner-day-cell:hover {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: var(--border-color);
+}
+
+.planner-day-cell.today {
+  border-color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.08);
+}
+
+.planner-day-cell.other-month {
+  opacity: 0.35;
+}
+
+.planner-day-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.planner-day-cell.today .planner-day-num {
+  color: var(--text-accent);
+}
+
+.deadline-dot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 600;
+  margin-bottom: 2px;
   white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-  z-index: 100;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.share-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: var(--border-color);
+.deadline-dot.low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
 }
 
-.share-tooltip.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.deadline-dot.medium {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
 }
 
-/* ── Edit Profile Modal ── */
-.profile-modal-backdrop {
+.deadline-dot.high {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+/* Week view */
+.planner-week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.week-day-col {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  min-height: 200px;
+}
+
+.week-day-col.today {
+  border-color: var(--accent-primary);
+  background: rgba(124, 58, 237, 0.06);
+}
+
+.week-day-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.week-day-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.week-day-num {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.week-day-col.today .week-day-num {
+  color: var(--text-accent);
+}
+
+/* Deadline list */
+.deadlines-list-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.deadlines-list-section h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.deadline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deadline-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+
+.deadline-item:hover {
+  background: rgba(124, 58, 237, 0.06);
+  border-color: var(--border-color);
+}
+
+.deadline-priority-bar {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.deadline-priority-bar.low  { background: var(--priority-low); }
+.deadline-priority-bar.medium { background: var(--priority-medium); }
+.deadline-priority-bar.high { background: var(--priority-high); }
+
+.deadline-info {
+  flex: 1;
+}
+
+.deadline-topic {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.deadline-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.deadline-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.deadline-badge.low {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--priority-low);
+}
+
+.deadline-badge.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--priority-medium);
+}
+
+.deadline-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--priority-high);
+}
+
+/* Action buttons row */
+.deadline-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.deadline-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 0;
+}
+
+.deadline-edit-btn:hover {
+  background: rgba(124, 58, 237, 0.12);
+  border-color: var(--border-color);
+  color: var(--text-accent);
+}
+
+.deadline-done-btn:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--priority-low);
+}
+
+.deadline-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: var(--priority-high);
+}
+
+/* Done state */
+.deadline-item--done {
+  opacity: 0.55;
+}
+
+.deadline-item--done .deadline-topic {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Completed section header */
+.completed-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 8px;
+}
+
+/* ── Edit Deadline Modal ── */
+.deadline-edit-backdrop {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(5, 5, 14, 0.78);
-  backdrop-filter: blur(7px);
-  -webkit-backdrop-filter: blur(7px);
+  background: rgba(5, 5, 14, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   align-items: center;
   justify-content: center;
   padding: 20px;
 }
 
-.profile-modal-backdrop.open {
+.deadline-edit-backdrop.open {
   display: flex;
-  animation: profileModalFadeIn 0.22s ease;
+  animation: dlModalFadeIn 0.2s ease;
 }
 
-@keyframes profileModalFadeIn {
+@keyframes dlModalFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-.profile-modal {
+.deadline-edit-modal {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: 420px;
+  overflow: hidden;
   box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(124, 58, 237, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  animation: profileModalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    0 24px 64px rgba(0,0,0,0.6),
+    0 0 0 1px rgba(124,58,237,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  animation: dlModalSlideUp 0.24s cubic-bezier(0.16,1,0.3,1);
 }
 
-@keyframes profileModalSlideUp {
-  from { opacity: 0; transform: translateY(16px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+@keyframes dlModalSlideUp {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Gradient top accent bar */
-.profile-modal::before {
+.deadline-edit-modal::before {
   content: '';
   display: block;
   height: 2px;
   background: var(--gradient-main);
 }
 
-.profile-modal-header {
+.deadline-edit-modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 22px 0;
+  padding: 18px 20px 0;
 }
 
-.profile-modal-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* Mini avatar preview inside the modal header */
-.profile-modal-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--gradient-btn);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
-  transition: var(--transition);
-}
-
-.profile-modal-title {
-  font-size: 16px;
+.deadline-edit-modal-header h3 {
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
 
-.profile-modal-close {
+.deadline-edit-close {
   width: 28px;
   height: 28px;
   border-radius: 6px;
@@ -555,142 +569,34 @@
   transition: var(--transition);
 }
 
-.profile-modal-close:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.25);
+.deadline-edit-close:hover {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
   color: #f87171;
 }
 
-.profile-modal-body {
-  padding: 20px 22px 8px;
+.deadline-edit-modal-body {
+  padding: 20px 20px 8px;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* Two-column grid for the fields */
-.profile-modal-grid {
+/* Two-column row inside the edit modal */
+.form-row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* ── Phone number field ── */
-.phone-field-row {
-  display: flex;
-  align-items: stretch;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  transition: var(--transition);
-}
-
-.phone-field-row:focus-within {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
-}
-
-.phone-country-wrap {
-  flex-shrink: 0;
-  border-right: 1px solid var(--border-color);
-  background: rgba(124, 58, 237, 0.08);
-}
-
-.phone-country-select {
-  height: 100%;
-  padding: 0 8px 0 10px;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-accent);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  /* Custom arrow */
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%236060a0' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  padding-right: 24px;
-  min-width: 80px;
-}
-
-.phone-country-select option {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 13px;
-}
-
-.phone-number-input {
-  flex: 1;
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-}
-
-/* Inline hint / error below the phone row */
-.phone-hint {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  min-height: 14px;
-}
-
-.phone-hint.hint-error {
-  color: #f87171;
-}
-
-/* Username field with @ prefix */
-.profile-modal-input-prefix {
-  display: flex;
-  align-items: center;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  transition: var(--transition);
-}
-
-.profile-modal-input-prefix:focus-within {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
-}
-
-.input-prefix {
-  padding: 0 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-accent);
-  background: rgba(124, 58, 237, 0.1);
-  border-right: 1px solid var(--border-color);
-  height: 100%;
-  display: flex;
-  align-items: center;
-  user-select: none;
-  flex-shrink: 0;
-  line-height: 40px;
-}
-
-.form-input--prefixed {
-  border: none !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  flex: 1;
-}
-
-.profile-modal-footer {
+.deadline-edit-modal-footer {
   display: flex;
   gap: 10px;
-  padding: 14px 22px 22px;
+  padding: 14px 20px 20px;
 }
 
-.profile-modal-cancel,
-.profile-modal-save {
+.deadline-edit-btn-cancel,
+.deadline-edit-btn-save {
   flex: 1;
   padding: 10px 16px;
   border-radius: var(--radius-sm);
@@ -702,641 +608,121 @@
   font-family: inherit;
 }
 
-.profile-modal-cancel {
-  background: rgba(255, 255, 255, 0.05);
+.deadline-edit-btn-cancel {
+  background: rgba(255,255,255,0.05);
   color: var(--text-secondary);
   border: 1px solid var(--border-subtle);
 }
 
-.profile-modal-cancel:hover {
-  background: rgba(255, 255, 255, 0.09);
+.deadline-edit-btn-cancel:hover {
+  background: rgba(255,255,255,0.09);
   color: var(--text-primary);
 }
 
-.profile-modal-save {
+.deadline-edit-btn-save {
   background: var(--gradient-btn);
   color: #fff;
-  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 2px 12px rgba(124,58,237,0.3);
 }
 
-.profile-modal-save:hover {
+.deadline-edit-btn-save:hover {
   background: var(--gradient-btn-hover);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.45);
+  box-shadow: 0 4px 16px rgba(124,58,237,0.45);
   transform: translateY(-1px);
 }
 
-@media (max-width: 600px) {
-  .profile-modal-grid {
-    grid-template-columns: 1fr;
-  }
+/* ── Date / time picker icon overrides ───────────────────────
+   .form-input--datetime is applied only to the Due Date and
+   Due Time inputs. The inputs themselves stay in the dark theme
+   (inheriting .form-input styles). Only the native calendar /
+   clock icon and the picker popup are overridden here.
+   ─────────────────────────────────────────────────────────── */
+
+/* color-scheme: dark tells the browser to render its native
+   date/time picker popup (calendar grid, time dropdown) using
+   the OS dark-mode palette — dark background, white text,
+   system-accent highlight. This is the only cross-browser CSS
+   hook that affects the popup chrome itself. */
+.form-input--datetime {
+  color-scheme: dark;
 }
 
-/* ── Courses Modal ── */
-.courses-modal {
-  max-width: 560px !important;
+/* Default: icon is already white because color-scheme:dark tells
+   the browser to use a light glyph on dark backgrounds. */
+.form-input--datetime::-webkit-calendar-picker-indicator {
+  opacity: 0.85;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 1px;
+  transition: filter 0.18s ease, opacity 0.18s ease;
 }
 
-.courses-modal-body {
-  padding: 16px 22px 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  /* Scrollable when list is long */
-  max-height: calc(90vh - 140px);
-  overflow-y: auto;
+/* Hover / focus: purple accent (#7A42F4) */
+.form-input--datetime:hover::-webkit-calendar-picker-indicator,
+.form-input--datetime:focus::-webkit-calendar-picker-indicator {
+  /* Force the glyph to #7A42F4 regardless of browser default */
+  filter: brightness(0) saturate(100%) invert(28%) sepia(89%) saturate(1800%) hue-rotate(248deg) brightness(110%);
+  opacity: 1;
 }
 
-/* Individual course row */
-.cm-course-row {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: border-color var(--transition);
-}
-
-.cm-course-row:hover {
-  border-color: var(--border-color);
-}
-
-.cm-course-header {
+.priority-legend {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 14px;
-  cursor: pointer;
-  user-select: none;
 }
 
-.cm-course-icon {
-  font-size: 22px;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.cm-course-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.cm-course-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cm-course-meta {
+.legend-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 3px;
-}
-
-/* Status badges */
-.cm-status--done {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--priority-low);
-}
-
-.cm-status--progress {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: rgba(124, 58, 237, 0.12);
-  color: var(--text-accent);
-}
-
-.cm-chapter-count {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* Progress bar inside the row */
-.cm-progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  width: 110px;
-}
-
-.cm-progress-bar {
-  flex: 1;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.cm-progress-fill {
-  height: 100%;
-  border-radius: 3px;
-  background: var(--gradient-btn);
-  transition: width 0.4s ease;
-}
-
-.cm-progress-pct {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-accent);
-  min-width: 30px;
-  text-align: right;
-}
-
-/* Expand chevron */
-.cm-expand-icon {
-  font-size: 16px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-  transition: transform 0.2s ease, color 0.2s ease;
-  display: inline-block;
-  width: 18px;
-  text-align: center;
-}
-
-.cm-expand-icon.expanded {
-  transform: rotate(90deg);
-  color: var(--text-accent);
-}
-
-/* Chapters list (collapsible) */
-.cm-chapters-list {
-  padding: 0 14px 12px 50px;
-  display: flex;
-  flex-direction: column;
   gap: 6px;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 10px;
-  animation: fadeIn 0.18s ease;
-}
-
-.cm-chapter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cm-chapter-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  flex-shrink: 0;
-  transition: background var(--transition);
-}
-
-.cm-chapter-dot.done {
-  background: var(--priority-low);
-  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
-}
-
-.cm-chapter-name {
   font-size: 12px;
   color: var(--text-secondary);
-  flex: 1;
 }
 
-.cm-chapter-name.done {
-  color: var(--text-muted);
-  text-decoration: line-through;
-}
 
-.cm-chapter-check {
-  font-size: 11px;
-  color: var(--priority-low);
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-/* ── Friends management ── */
-
-/* "Add Friend" button in the section header */
-.friends-add-btn {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 11px;
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  color: var(--text-accent);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  font-family: inherit;
-}
-
-.friends-add-btn:hover {
-  background: rgba(124, 58, 237, 0.22);
-  border-color: var(--accent-primary);
-  color: var(--text-primary);
-}
-
-/* Remove (X) button on each friend row */
-.friend-remove-btn {
-  width: 22px;
-  height: 22px;
+.legend-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  flex-shrink: 0;
-  transition: var(--transition);
-  opacity: 0;  /* hidden until row is hovered */
 }
 
-.friend-item:hover .friend-remove-btn {
-  opacity: 1;
-}
-
-.friend-remove-btn:hover {
-  background: rgba(239, 68, 68, 0.12);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
-/* Empty state */
-.friends-empty {
-  font-size: 13px;
-  color: var(--text-muted);
-  text-align: center;
-  padding: 16px 0;
-}
-
-/* ── Add Friend Modal ── */
-.add-friend-modal {
-  max-width: 420px !important;
-}
-
-/* Search row: input + Add button side by side */
-.af-search-row {
-  display: flex;
-  gap: 8px;
-}
-
-.af-add-btn {
-  padding: 0 16px;
-  background: var(--gradient-btn);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: var(--transition);
-  font-family: inherit;
-  flex-shrink: 0;
-}
-
-.af-add-btn:hover {
-  background: var(--gradient-btn-hover);
-  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.4);
-}
-
-/* Suggestions dropdown */
-.af-suggestions {
-  margin-top: 6px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-}
-
-.af-suggestion-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.af-suggestion-item:hover {
-  background: rgba(124, 58, 237, 0.1);
-}
-
-.af-sugg-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.af-sugg-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-/* Feedback messages */
-.af-feedback {
-  font-size: 12px;
-  margin-top: 6px;
-  min-height: 16px;
-}
-
-.af-feedback--ok    { color: var(--priority-low); }
-.af-feedback--error { color: #f87171; }
-
-/* "or" divider between the two options */
-.af-divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-.af-divider::before,
-.af-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border-subtle);
-}
-
-/* ── Remove Friend Confirmation Modal ── */
-.remove-friend-modal {
-  max-width: 380px !important;
-}
-
-.remove-friend-body {
-  padding: 20px 22px 8px;
-  text-align: center;
-}
-
-.remove-friend-msg {
-  font-size: 15px;
-  color: var(--text-primary);
-  line-height: 1.5;
-  margin-bottom: 6px;
-}
-
-.remove-friend-msg strong {
-  color: var(--text-accent);
-}
-
-.remove-friend-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-/* Confirm button — red destructive action */
-.remove-friend-confirm {
-  flex: 1;
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: var(--transition);
-  font-family: inherit;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
-}
-
-.remove-friend-confirm:hover {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.45);
-  transform: translateY(-1px);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   APP THEME SECTION
-   ═══════════════════════════════════════════════════════════ */
-
-.theme-section {
-  margin: 28px 32px 32px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
-}
-
-.theme-section-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.theme-section-icon {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.theme-section-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.theme-section-sub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-/* Two-column option grid */
-.theme-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-/* Each theme option card */
-.theme-option {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: var(--bg-secondary);
-  border: 2px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  user-select: none;
-}
-
-.theme-option input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-
-.theme-option:hover {
-  border-color: var(--accent-primary);
-  background: var(--bg-card-hover);
-}
-
-.theme-option.selected {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
-  background: var(--bg-card-hover);
-}
-
-[data-theme="light"] .theme-option.selected {
-  box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.18);
-}
-
-/* Checkmark badge — shown only when selected */
-.theme-option-check {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--gradient-btn);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-
-.theme-option.selected .theme-option-check {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* Mini preview mockup */
-.theme-option-preview {
-  width: 100%;
-  height: 64px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.12);
-  flex-shrink: 0;
-}
-
-/* Dark preview colours */
-.theme-preview-dark {
-  background: #0d0d14;
-}
-
-.theme-preview-dark .tp-sidebar {
-  width: 28%;
-  background: #12121e;
-  border-right: 1px solid rgba(255,255,255,0.06);
-}
-
-.theme-preview-dark .tp-content {
-  flex: 1;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  justify-content: center;
-}
-
-.theme-preview-dark .tp-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(255,255,255,0.1);
-}
-
-.theme-preview-dark .tp-bar--accent {
-  background: linear-gradient(90deg, #9b59b6, #7c3aed);
-  width: 70%;
-}
-
-.theme-preview-dark .tp-bar--short { width: 45%; }
-
-/* Light preview colours */
-.theme-preview-light {
-  background: #f4f4fb;
-}
-
-.theme-preview-light .tp-sidebar {
-  width: 28%;
-  background: #ffffff;
-  border-right: 1px solid rgba(0,0,0,0.08);
-}
-
-.theme-preview-light .tp-content {
-  flex: 1;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  justify-content: center;
-}
-
-.theme-preview-light .tp-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: rgba(0,0,0,0.1);
-}
-
-.theme-preview-light .tp-bar--accent {
-  background: linear-gradient(90deg, #b57edc, #9b59b6);
-  width: 70%;
-}
-
-.theme-preview-light .tp-bar--short { width: 45%; }
-
-/* Label row */
-.theme-option-label {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.theme-option-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.theme-option-desc {
-  font-size: 11px;
-  color: var(--text-muted);
-}
+.legend-dot.low    { background: var(--priority-low); }
+.legend-dot.medium { background: var(--priority-medium); }
+.legend-dot.high   { background: var(--priority-high); }
 
 @media (max-width: 768px) {
-  .theme-section {
-    margin: 20px 16px 24px;
-    padding: 18px 16px;
-  }
-
-  .theme-options {
+  .form-row {
     grid-template-columns: 1fr;
   }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-week-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .planner-days-grid {
+    gap: 2px;
+  }
+
+  .planner-day-cell {
+    min-height: 60px;
+  }
+}
+
+
+/* Priority legend - horizontal layout */
+.priority-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
