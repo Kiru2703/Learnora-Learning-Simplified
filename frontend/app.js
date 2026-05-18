@@ -81,10 +81,11 @@ function navigateTo(page) {
       AppTheme.apply(AppTheme.get());
       break;
     case 'chat': {
-      // Reset to empty/centered state for a fresh chat
+      // Clear messages for a fresh chat
       const cc = document.getElementById('chatContainer');
       const msgs = document.getElementById('chatMessages');
-      if (cc && msgs && msgs.children.length === 0) {
+      if (cc && msgs) {
+        msgs.innerHTML = '';
         cc.classList.remove('has-messages');
       }
       break;
