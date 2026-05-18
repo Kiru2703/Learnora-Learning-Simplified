@@ -55,66 +55,23 @@ const HubPage = (() => {
     return d;
   }
 
-  const PROJECTS = [
-    { id: 1, icon: '🤖', name: 'AI Study Group',       desc: 'Collaborative deep dive into machine learning fundamentals and applications.', status: 'active',   members: ['A','B','C','D'], progress: 65 },
-    { id: 2, icon: '📊', name: 'Data Science Project', desc: 'Building a predictive model for student performance analytics.',               status: 'active',   members: ['E','F','G'],     progress: 40 },
-    { id: 3, icon: '🌐', name: 'Web Dev Bootcamp',     desc: 'Full-stack web development with React and Node.js.',                          status: 'planning', members: ['H','I'],         progress: 15 },
-    { id: 4, icon: '🔬', name: 'Research Paper',       desc: 'Writing a survey paper on transformer architectures in NLP.',                 status: 'active',   members: ['J','K','L','M'], progress: 80 },
-  ];
+  const PROJECTS = [];
 
   const PROJECT_NAMES = PROJECTS.map(p => p.name);
 
-  const LEADERBOARD = [
-    { name: 'Alex Chen', points: 4820, streak: '32 day streak', avatar: 'AC', color: '#7c3aed' },
-    { name: 'Maya Patel', points: 4210, streak: '28 day streak', avatar: 'MP', color: '#2563eb' },
-    { name: 'Jordan Lee', points: 3950, streak: '21 day streak', avatar: 'JL', color: '#0d9488' },
-    { name: 'Sam Rivera', points: 3400, streak: '15 day streak', avatar: 'SR', color: '#db2777' },
-    { name: 'Taylor Kim', points: 2980, streak: '10 day streak', avatar: 'TK', color: '#7c3aed' },
-    { name: 'Casey Morgan', points: 2540, streak: '7 day streak', avatar: 'CM', color: '#2563eb' },
-    { name: 'Riley Zhang', points: 2100, streak: '5 day streak', avatar: 'RZ', color: '#0d9488' },
-  ];
+  const LEADERBOARD = [];
 
   const EVENTS = [];  // legacy static list replaced by localStorage group events
 
   const CHAT_ROOMS = [
-    { id: 'general',  icon: '💬', name: 'General',        type: 'group', unread: 3 },
-    { id: 'ai-group', icon: '🤖', name: 'AI Study Group', type: 'group', unread: 0 },
-    { id: 'data-sci', icon: '📊', name: 'Data Science',   type: 'group', unread: 1 },
-    { id: 'web-dev',  icon: '🌐', name: 'Web Dev',        type: 'group', unread: 0 },
+    { id: 'general',  icon: '💬', name: 'General',        type: 'group', unread: 0 },
   ];
 
-  // Direct message contacts — each has a unique id, display name, avatar initials, colour
-  const DM_CONTACTS = [
-    { id: 'dm-alex',   name: 'Alex Chen',   avatar: 'AC', color: '#7c3aed', unread: 2, online: true  },
-    { id: 'dm-maya',   name: 'Maya Patel',  avatar: 'MP', color: '#2563eb', unread: 0, online: true  },
-    { id: 'dm-jordan', name: 'Jordan Lee',  avatar: 'JL', color: '#0d9488', unread: 1, online: false },
-    { id: 'dm-sam',    name: 'Sam Rivera',  avatar: 'SR', color: '#db2777', unread: 0, online: false },
-  ];
+  // Direct message contacts
+  const DM_CONTACTS = [];
 
   const CHAT_MESSAGES = {
-    general: [
-      { name: 'Alex Chen', avatar: 'AC', color: '#7c3aed', text: 'Hey everyone! Ready for the study session tomorrow?' },
-      { name: 'Maya Patel', avatar: 'MP', color: '#2563eb', text: 'Absolutely! I\'ve been reviewing the neural network chapter.' },
-      { name: 'Jordan Lee', avatar: 'JL', color: '#0d9488', text: 'Same here. Should we focus on backpropagation?' },
-      { name: 'Alex Chen', avatar: 'AC', color: '#7c3aed', text: 'Great idea. I\'ll prepare some practice problems.' },
-    ],
-    'ai-group': [
-      { name: 'Sam Rivera', avatar: 'SR', color: '#db2777', text: 'Just pushed the updated model to the repo.' },
-      { name: 'Taylor Kim', avatar: 'TK', color: '#7c3aed', text: 'Nice! What accuracy did you get?' },
-      { name: 'Sam Rivera', avatar: 'SR', color: '#db2777', text: '87% on the validation set. Still tuning hyperparameters.' },
-    ],
-    'dm-alex': [
-      { name: 'Alex Chen', avatar: 'AC', color: '#7c3aed', text: 'Hey! Did you finish the ML assignment?', dm: true },
-      { name: 'You',       avatar: 'YO', color: '#0d9488', text: 'Almost done — just the last section.',   dm: true },
-      { name: 'Alex Chen', avatar: 'AC', color: '#7c3aed', text: 'Nice, let me know if you need help.',    dm: true },
-    ],
-    'dm-maya': [
-      { name: 'Maya Patel', avatar: 'MP', color: '#2563eb', text: 'Are you joining the study group tonight?', dm: true },
-    ],
-    'dm-jordan': [
-      { name: 'Jordan Lee', avatar: 'JL', color: '#0d9488', text: 'Can you share your notes from yesterday?', dm: true },
-    ],
-    'dm-sam': [],
+    general: [],
   };
 
   // ── Available users for member selection ──────────────────
@@ -1218,12 +1175,18 @@ const HubPage = (() => {
         </div>
 
         <!-- Chat panel (hidden) -->
-        <div id="groupChatPanel" style="display:none;position:fixed;right:0;top:0;width:320px;height:100vh;background:var(--bg-secondary,#1e1e2e);border-left:1px solid var(--border,#444);padding:20px;overflow-y:auto;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.3);">
+        <div id="groupChatPanel" style="display:none;position:fixed;right:0;top:0;width:320px;height:100vh;background:var(--bg-secondary,#1e1e2e);border-left:1px solid var(--border,#444);padding:20px;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.3);display:none;flex-direction:column;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
             <h4 style="margin:0;font-size:14px;">💬 Group Chat</h4>
             <button onclick="HubPage.toggleGroupChat()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;">✕</button>
           </div>
-          ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet.</p>'}
+          <div id="groupChatMessages" style="flex:1;overflow-y:auto;margin-bottom:12px;">
+            ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet. Start the conversation!</p>'}
+          </div>
+          <div style="display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border,#444);">
+            <input type="text" id="groupChatInput" placeholder="Type a message..." style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupChat()"/>
+            <button onclick="HubPage.sendGroupChat()" style="padding:8px 14px;border-radius:8px;border:none;background:var(--accent,#a855f7);color:#fff;cursor:pointer;font-size:12px;">Send</button>
+          </div>
         </div>
 
         <!-- Progress -->
@@ -1284,7 +1247,28 @@ const HubPage = (() => {
 
   function toggleGroupChat() {
     const el = document.getElementById('groupChatPanel');
-    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    if (el) {
+      if (el.style.display === 'none' || el.style.display === '') {
+        el.style.display = 'flex';
+      } else {
+        el.style.display = 'none';
+      }
+    }
+  }
+
+  function sendGroupChat() {
+    const input = document.getElementById('groupChatInput');
+    const container = document.getElementById('groupChatMessages');
+    if (!input || !container) return;
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    const name = localStorage.getItem('learnora_username') || 'You';
+    const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() || 'YO';
+
+    container.innerHTML += '<div style="display:flex;gap:8px;padding:6px 0;"><div style="width:28px;height:28px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;">' + initials + '</div><div><strong style="font-size:12px;">' + name + '</strong><p style="font-size:13px;margin:2px 0 0;color:var(--text-secondary,#ccc);">' + text.replace(/</g,'&lt;') + '</p></div></div>';
+    container.scrollTop = container.scrollHeight;
   }
 
   function sendGroupAi() {
@@ -1358,6 +1342,7 @@ const HubPage = (() => {
     closeGroupDetail,
     toggleGroupMembers,
     toggleGroupChat,
+    sendGroupChat,
     sendGroupAi,
     // Leaderboard (exposed for live refresh)
     buildLeaderboardHTML,
