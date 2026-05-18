@@ -1209,14 +1209,20 @@ const HubPage = (() => {
         </div>
 
         <!-- Members panel (hidden) -->
-        <div id="groupMembersList" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;margin-bottom:16px;">
-          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);">Group Members</h4>
+        <div id="groupMembersList" style="display:none;position:fixed;right:0;top:0;width:280px;height:100vh;background:var(--bg-secondary,#1e1e2e);border-left:1px solid var(--border,#444);padding:20px;overflow-y:auto;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.3);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h4 style="margin:0;font-size:14px;">👥 Members</h4>
+            <button onclick="HubPage.toggleGroupMembers()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;">✕</button>
+          </div>
           ${membersHTML}
         </div>
 
         <!-- Chat panel (hidden) -->
-        <div id="groupChatPanel" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;margin-bottom:16px;max-height:200px;overflow-y:auto;">
-          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);">Group Chat</h4>
+        <div id="groupChatPanel" style="display:none;position:fixed;right:0;top:0;width:320px;height:100vh;background:var(--bg-secondary,#1e1e2e);border-left:1px solid var(--border,#444);padding:20px;overflow-y:auto;z-index:100;box-shadow:-4px 0 20px rgba(0,0,0,0.3);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h4 style="margin:0;font-size:14px;">💬 Group Chat</h4>
+            <button onclick="HubPage.toggleGroupChat()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;">✕</button>
+          </div>
           ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet.</p>'}
         </div>
 
@@ -1251,14 +1257,12 @@ const HubPage = (() => {
           </div>
         </div>
 
-        <!-- AI Assistant -->
-        <div style="padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
-          <h3 style="margin:0 0 12px;font-size:14px;">🤖 AI Study Assistant</h3>
-          <div id="groupAiMessages" style="min-height:60px;max-height:200px;overflow-y:auto;margin-bottom:12px;font-size:13px;color:var(--text-secondary,#ccc);">
-            <p style="color:var(--text-muted);font-size:12px;">Ask the AI for study suggestions, topic explanations, or group activity ideas.</p>
-          </div>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="groupAiInput" placeholder="Ask AI for suggestions..." style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupAi()"/>
+        <!-- AI Assistant (fixed at bottom) -->
+        <div style="position:fixed;bottom:0;left:160px;right:0;padding:12px 24px;background:var(--bg-secondary,#1e1e2e);border-top:1px solid var(--border,#444);z-index:50;">
+          <div id="groupAiMessages" style="max-height:80px;overflow-y:auto;margin-bottom:8px;font-size:13px;color:var(--text-secondary,#ccc);"></div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:14px;">🤖</span>
+            <input type="text" id="groupAiInput" placeholder="Ask AI for study suggestions..." style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupAi()"/>
             <button onclick="HubPage.sendGroupAi()" style="padding:10px 16px;border-radius:8px;border:none;background:var(--accent,#a855f7);color:#fff;cursor:pointer;font-size:13px;font-weight:500;">Send</button>
           </div>
         </div>
