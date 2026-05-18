@@ -90,12 +90,12 @@ When generating structured data (pathways, questions), respond with valid JSON o
   /**
    * Chat — general learning assistant (text only).
    */
-  async function chat(userMessage, { history = [] } = {}) {
+  async function chat(userMessage, { history = [], maxTokens = 512 } = {}) {
     const messages = [
       ...history,
       { role: 'user', content: userMessage },
     ];
-    return _call(messages, { maxTokens: 1024, temperature: 0.7 });
+    return _call(messages, { maxTokens, temperature: 0.7 });
   }
 
   /**
