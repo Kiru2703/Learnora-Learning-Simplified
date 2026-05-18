@@ -416,7 +416,7 @@ const ChatPage = (() => {
 
     const query = text || 'Generate a learning pathway from my notes';
 
-    if (window.BedrockAI && BedrockAI.isConfigured()) {
+    if (window.LEARNORA_API_URL) {
       let fileTopic = null;
       try {
         let fileContent = null;
@@ -464,8 +464,9 @@ const ChatPage = (() => {
         if (isPathwayRequest || fileContent) {
           // Use direct fetch for pathway generation (same approach that works for notes)
           const jsonFormat = 'Return JSON only in this exact format: {"title":"Topic Learning Pathway","steps":[{"topic":"Topic 1","name":"Step name","description":"One sentence"}]}. Include 4-6 steps based on the actual content provided. Use specific topic names from the content, not generic ones. Return JSON only.';
-          const userMsg = fileContent
-            ? 'Generate a structured learning pathway based on these notes:\n\n' + fileContent.slice(0, 3000) + '\n\nUser asked: "' + query + '"\n\n' + jsonFormat
+          const contentSlice = fileContent ? fileContent.slice(0, 1500) : '';
+          const userMsg = contentSlice
+            ? 'Generate a structured learning pathway based on these notes:\n\n' + contentSlice + '\n\nUser asked: "' + query + '"\n\n' + jsonFormat
             : 'Generate a structured learning pathway for: "' + query + '"\n\n' + jsonFormat;
 
           const pathRes = await fetch(window.LEARNORA_API_URL + '/chat', {
