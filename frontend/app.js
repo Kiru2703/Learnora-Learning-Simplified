@@ -354,6 +354,11 @@ function openPathway(id) {
     .then(function(res) { return res.json(); })
     .then(function(json) {
       var html = (json.content || '').replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
+      // Add voice narration button at the end
+      html += '<div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border,#333);display:flex;align-items:center;gap:10px;">' +
+        '<button id="narrateBtn" onclick="window._toggleNarration()" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);cursor:pointer;font-size:13px;">' +
+        '🔊 <span id="narrateBtnText">Start Narration</span></button>' +
+        '<span id="narrateStatus" style="font-size:12px;color:var(--text-muted);"></span></div>';
       if (!window.PATHWAY_DATA[_noteId]) window.PATHWAY_DATA[_noteId] = {};
       window.PATHWAY_DATA[_noteId].content = html;
       var el = document.getElementById('topicNotesContent');
@@ -936,6 +941,65 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay')?.classList.remove('active');
   document.body.style.overflow = '';
 }
+
+// ── Voice Narration ───────────────────────────────────────────
+window._narrationUtterance = null;
+window._narrationActive = false;
+
+window._toggleNarration = function() {
+  if (window._narrationActive) {
+    speechSynthesis.cancel();
+    window._narrationActive = false;
+    var btn = document.getElementById('narrateBtnText');
+    if (btn) btn.textContent = 'Start Narration';
+    var status = document.getElementById('narrateStatus');
+    if (status) status.textContent = 'Stopped';
+    setTimeout(function() { if (status) status.textContent = ''; }, 2000);
+    return;
+  }
+
+  // Get the text content from notes (strip HTML)
+  var notesEl = document.getElementById('topicNotesContent');
+  if (!notesEl) return;
+  var text = notesEl.innerText || notesEl.textContent || '';
+  // Remove the "Start Narration" button text from the narration
+  text = text.replace(/🔊\s*Start Narration/g, '').replace(/🔊\s*Stop Narration/g, '').trim();
+
+  if (!text) return;
+
+  var utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+  utterance.lang = 'en-US';
+
+  utterance.onstart = function() {
+    window._narrationActive = true;
+    var btn = document.getElementById('narrateBtnText');
+    if (btn) btn.textContent = 'Stop Narration';
+    var status = document.getElementById('narrateStatus');
+    if (status) status.textContent = '▶ Reading aloud...';
+  };
+
+  utterance.onend = function() {
+    window._narrationActive = false;
+    var btn = document.getElementById('narrateBtnText');
+    if (btn) btn.textContent = 'Start Narration';
+    var status = document.getElementById('narrateStatus');
+    if (status) status.textContent = '✓ Done';
+    setTimeout(function() { if (status) status.textContent = ''; }, 3000);
+  };
+
+  utterance.onerror = function() {
+    window._narrationActive = false;
+    var btn = document.getElementById('narrateBtnText');
+    if (btn) btn.textContent = 'Start Narration';
+    var status = document.getElementById('narrateStatus');
+    if (status) status.textContent = 'Error playing audio';
+  };
+
+  speechSynthesis.speak(utterance);
+  window._narrationUtterance = utterance;
+};
 
 // ── Init ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
