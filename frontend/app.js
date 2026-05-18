@@ -326,31 +326,40 @@ function openPathway(id) {
   if (window.DoubtsBar) DoubtsBar.init(id);
   closeSidebar();
 
-  // Auto-generate notes via Bedrock after a short delay to ensure DOM is ready
-  setTimeout(() => {
-    const notesEl = document.getElementById('topicNotesContent');
-    if (notesEl && notesEl.innerHTML.includes('Generating')) {
-      const title = document.querySelector('.topic-title')?.textContent || 'Topic';
-      const pw = parentPathway?.name || 'Pathway';
-      const src = parentPathway?.sourceTopic || null;
-      const prompt = src
-        ? `Generate brief study notes for "${title}" (part of a course on "${src}"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.`
-        : `Generate brief study notes for "${title}" (pathway: "${pw}"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.`;
+  // Auto-generate notes directly via fetch (bypasses any closure issues)
+  if ((!data || !data.content) && window.LEARNORA_API_URL) {
+    var _noteId = id;
+    var _noteTitle = topicMeta?.title || topicTitle || 'Topic';
+    var _notePw = parentPathway?.name || 'Pathway';
+    var _noteSrc = parentPathway?.sourceTopic || null;
+    var _notePromptText = _noteSrc
+      ? 'Generate brief study notes for "' + _noteTitle + '" (part of a course on "' + _noteSrc + '"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.'
+      : 'Generate brief study notes for "' + _noteTitle + '" (pathway: "' + _notePw + '"). Use HTML h2,p,ul,li,strong tags. 3-4 paragraphs. No markdown code fences. Raw HTML only.';
 
-      if (window.BedrockAI && BedrockAI.isConfigured()) {
-        BedrockAI.chat(prompt, { history: [], maxTokens: 400 }).then(rawHtml => {
-          const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
-          if (!PATHWAY_DATA[id]) PATHWAY_DATA[id] = {};
-          PATHWAY_DATA[id].content = html;
-          const el = document.getElementById('topicNotesContent');
-          if (el) el.innerHTML = html;
-        }).catch(err => {
-          const el = document.getElementById('topicNotesContent');
-          if (el) el.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
-        });
-      }
-    }
-  }, 500);
+    fetch(window.LEARNORA_API_URL + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+        system: 'You are an expert AI tutor. Generate educational content.',
+        messages: [{ role: 'user', content: _notePromptText }],
+        max_tokens: 400,
+        temperature: 0.5
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      var html = (json.content || '').replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
+      if (!window.PATHWAY_DATA[_noteId]) window.PATHWAY_DATA[_noteId] = {};
+      window.PATHWAY_DATA[_noteId].content = html;
+      var el = document.getElementById('topicNotesContent');
+      if (el) el.innerHTML = html;
+    })
+    .catch(function(err) {
+      var el = document.getElementById('topicNotesContent');
+      if (el) el.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
+    });
+  }
 }
 
 // ── Pathway roadmap view ──────────────────────────────────────
