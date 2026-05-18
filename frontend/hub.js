@@ -1241,13 +1241,25 @@ const HubPage = (() => {
         </div>
 
         <!-- Shared Goals -->
-        <div style="padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
+        <div style="padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;margin-bottom:20px;">
           <h3 style="margin:0 0 12px;font-size:14px;">🎯 Group Goals</h3>
           <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
             <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span> Complete Chapter 1-3 review</div>
             <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span> Submit practice problems</div>
             <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);">○</span> Prepare presentation slides</div>
             <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);">○</span> Final group review session</div>
+          </div>
+        </div>
+
+        <!-- AI Assistant -->
+        <div style="padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
+          <h3 style="margin:0 0 12px;font-size:14px;">🤖 AI Study Assistant</h3>
+          <div id="groupAiMessages" style="min-height:60px;max-height:200px;overflow-y:auto;margin-bottom:12px;font-size:13px;color:var(--text-secondary,#ccc);">
+            <p style="color:var(--text-muted);font-size:12px;">Ask the AI for study suggestions, topic explanations, or group activity ideas.</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="groupAiInput" placeholder="Ask AI for suggestions..." style="flex:1;padding:10px 14px;border-radius:8px;border:1px solid var(--border,#444);background:var(--bg-tertiary,#2a2a3e);color:var(--text-primary,#fff);font-size:13px;outline:none;" onkeydown="if(event.key==='Enter')HubPage.sendGroupAi()"/>
+            <button onclick="HubPage.sendGroupAi()" style="padding:10px 16px;border-radius:8px;border:none;background:var(--accent,#a855f7);color:#fff;cursor:pointer;font-size:13px;font-weight:500;">Send</button>
           </div>
         </div>
 
@@ -1267,6 +1279,45 @@ const HubPage = (() => {
   function toggleGroupChat() {
     const el = document.getElementById('groupChatPanel');
     if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function sendGroupAi() {
+    const input = document.getElementById('groupAiInput');
+    const container = document.getElementById('groupAiMessages');
+    if (!input || !container) return;
+    const question = input.value.trim();
+    if (!question) return;
+    input.value = '';
+
+    // Show user message
+    container.innerHTML += '<div style="margin-bottom:8px;"><strong style="color:var(--accent,#a855f7);">You:</strong> ' + question.replace(/</g,'&lt;') + '</div>';
+    container.innerHTML += '<div style="margin-bottom:8px;color:var(--text-muted);"><em>Thinking...</em></div>';
+    container.scrollTop = container.scrollHeight;
+
+    fetch(window.LEARNORA_API_URL + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model_id: 'global.anthropic.claude-haiku-4-5-20251001-v1:0',
+        system: 'You are a helpful AI study assistant for a group study session. Give brief, actionable suggestions. Keep responses to 2-3 sentences.',
+        messages: [{ role: 'user', content: question }],
+        max_tokens: 200,
+        temperature: 0.7
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(json) {
+      // Remove "Thinking..."
+      var msgs = container.querySelectorAll('div');
+      if (msgs.length > 0) msgs[msgs.length - 1].remove();
+      container.innerHTML += '<div style="margin-bottom:8px;"><strong style="color:#10b981;">AI:</strong> ' + (json.content || 'No response.') + '</div>';
+      container.scrollTop = container.scrollHeight;
+    })
+    .catch(function(err) {
+      var msgs = container.querySelectorAll('div');
+      if (msgs.length > 0) msgs[msgs.length - 1].remove();
+      container.innerHTML += '<div style="margin-bottom:8px;color:#ef4444;">Error: ' + err.message + '</div>';
+    });
   }
 
   // ── Group Detail View End ──────────────────────────────────
@@ -1301,6 +1352,7 @@ const HubPage = (() => {
     closeGroupDetail,
     toggleGroupMembers,
     toggleGroupChat,
+    sendGroupAi,
     // Leaderboard (exposed for live refresh)
     buildLeaderboardHTML,
   };
