@@ -35,26 +35,40 @@ When generating structured data (pathways, questions), respond with valid JSON o
       throw new Error('BEDROCK_NOT_CONFIGURED');
     }
 
-    const response = await fetch(`${API_URL}/chat`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model_id:    MODEL_ID,
-        system:      SYSTEM_PROMPT,
-        messages,
-        max_tokens:  maxTokens,
-        temperature,
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
-    if (!response.ok) {
-      const err = await response.text().catch(() => response.statusText);
-      throw new Error(`Bedrock API error ${response.status}: ${err}`);
+    try {
+      const response = await fetch(`${API_URL}/chat`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model_id:    MODEL_ID,
+          system:      SYSTEM_PROMPT,
+          messages,
+          max_tokens:  maxTokens,
+          temperature,
+        }),
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const err = await response.text().catch(() => response.statusText);
+        throw new Error(`Bedrock API error ${response.status}: ${err}`);
+      }
+
+      const data = await response.json();
+      // Lambda returns { content: "..." }
+      return data.content || '';
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out — please try again');
+      }
+      throw err;
     }
-
-    const data = await response.json();
-    // Lambda returns { content: "..." }
-    return data.content || '';
   }
 
   // ── Helper: convert a File/Blob to base64 ─────────────────
