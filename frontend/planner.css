@@ -665,9 +665,10 @@
   opacity: 1;
 }
 
+.priority-legend {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  align-items: center;
+  gap: 12px;
 }
 
 .legend-item {
@@ -677,6 +678,7 @@
   font-size: 12px;
   color: var(--text-secondary);
 }
+
 
 .legend-dot {
   width: 8px;
@@ -708,4 +710,19 @@
   .planner-day-cell {
     min-height: 60px;
   }
+}
+
+
+/* Priority legend - horizontal layout */
+.priority-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
