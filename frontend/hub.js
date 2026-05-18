@@ -1191,20 +1191,37 @@ const HubPage = (() => {
     if (!page) return;
 
     page.innerHTML = `
-      <div class="hub-page" style="max-width:800px;margin:0 auto;">
+      <div class="hub-page" style="width:100%;max-width:100%;padding:24px;">
         <button onclick="HubPage.closeGroupDetail()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;margin-bottom:12px;">← Back to Learning Hub</button>
 
-        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
           <div style="font-size:2.5rem;">${p.icon}</div>
-          <div>
+          <div style="flex:1;">
             <h1 style="margin:0;font-size:1.5rem;">${p.name}</h1>
             <p style="margin:4px 0 0;color:var(--text-muted);font-size:13px;">${p.desc}</p>
             <span class="project-status ${p.status}" style="margin-top:6px;display:inline-block;">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
           </div>
+          <!-- Members & Chat toggles on top right -->
+          <div style="display:flex;gap:8px;">
+            <button onclick="HubPage.toggleGroupMembers()" style="background:var(--bg-secondary,#1e1e2e);border:1px solid var(--border,#444);border-radius:8px;padding:8px 14px;color:var(--text-primary,#fff);cursor:pointer;font-size:12px;">👥 Members (${p.members.length})</button>
+            <button onclick="HubPage.toggleGroupChat()" style="background:var(--bg-secondary,#1e1e2e);border:1px solid var(--border,#444);border-radius:8px;padding:8px 14px;color:var(--text-primary,#fff);cursor:pointer;font-size:12px;">💬 Chat</button>
+          </div>
+        </div>
+
+        <!-- Members panel (hidden) -->
+        <div id="groupMembersList" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;margin-bottom:16px;">
+          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);">Group Members</h4>
+          ${membersHTML}
+        </div>
+
+        <!-- Chat panel (hidden) -->
+        <div id="groupChatPanel" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;margin-bottom:16px;max-height:200px;overflow-y:auto;">
+          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);">Group Chat</h4>
+          ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet.</p>'}
         </div>
 
         <!-- Progress -->
-        <div style="margin-bottom:24px;">
+        <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
             <span>Group Progress</span><span>${p.progress}%</span>
           </div>
@@ -1214,32 +1231,23 @@ const HubPage = (() => {
         </div>
 
         <!-- Study Materials -->
-        <div style="margin-bottom:24px;padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
+        <div style="margin-bottom:20px;padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
           <h3 style="margin:0 0 12px;font-size:14px;">📚 Study Materials</h3>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📕 Course Notes.pdf</div>
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📘 Reference Guide.docx</div>
-            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📝 Meeting Notes.md</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📕 Course Notes.pdf</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📘 Reference Guide.docx</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📝 Meeting Notes.md</div>
           </div>
         </div>
 
-        <!-- Members (hidden by default) -->
-        <div style="margin-bottom:24px;">
-          <button onclick="HubPage.toggleGroupMembers()" style="background:none;border:1px solid var(--border,#444);border-radius:8px;padding:10px 16px;color:var(--text-primary,#fff);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;width:100%;">
-            👥 Members (${p.members.length}) — <span style="color:var(--text-muted);">click to expand</span>
-          </button>
-          <div id="groupMembersList" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:0 0 12px 12px;margin-top:-4px;">
-            ${membersHTML}
-          </div>
-        </div>
-
-        <!-- Group Chat (hidden by default) -->
-        <div style="margin-bottom:24px;">
-          <button onclick="HubPage.toggleGroupChat()" style="background:none;border:1px solid var(--border,#444);border-radius:8px;padding:10px 16px;color:var(--text-primary,#fff);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;width:100%;">
-            💬 Group Chat — <span style="color:var(--text-muted);">click to expand</span>
-          </button>
-          <div id="groupChatPanel" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:0 0 12px 12px;margin-top:-4px;max-height:250px;overflow-y:auto;">
-            ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet.</p>'}
+        <!-- Shared Goals -->
+        <div style="padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
+          <h3 style="margin:0 0 12px;font-size:14px;">🎯 Group Goals</h3>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span> Complete Chapter 1-3 review</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:#10b981;">✓</span> Submit practice problems</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);">○</span> Prepare presentation slides</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--text-muted);">○</span> Final group review session</div>
           </div>
         </div>
 
