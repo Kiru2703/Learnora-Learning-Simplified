@@ -191,7 +191,7 @@ const HubPage = (() => {
       `).join('');
 
       return `
-        <div class="project-card">
+        <div class="project-card" onclick="HubPage.openGroup(${p.id})" style="cursor:pointer;">
           <div class="project-card-header">
             <div class="project-icon">${p.icon}</div>
             <span class="project-status ${p.status}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
@@ -1167,6 +1167,102 @@ const HubPage = (() => {
     if (e.key === 'Enter') sendPeerMessage();
   }
 
+  // ── Group Detail View ────────────────────────────────────────
+  function openGroup(groupId) {
+    const p = PROJECTS.find(g => g.id === groupId);
+    if (!p) return;
+
+    const AVATAR_COLORS = ['#7c3aed','#2563eb','#0d9488','#db2777','#d97706','#059669'];
+    const membersHTML = p.members.map((m, i) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border,#333);">
+        <div style="width:32px;height:32px;border-radius:50%;background:${AVATAR_COLORS[i%AVATAR_COLORS.length]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;">${m}</div>
+        <span style="font-size:13px;">Member ${m}</span>
+      </div>`).join('');
+
+    const chatId = p.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const msgs = CHAT_MESSAGES[chatId] || CHAT_MESSAGES['general'] || [];
+    const chatHTML = msgs.map(msg => `
+      <div style="display:flex;gap:8px;padding:6px 0;">
+        <div style="width:28px;height:28px;border-radius:50%;background:${msg.color};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;">${msg.avatar}</div>
+        <div><strong style="font-size:12px;">${msg.name}</strong><p style="font-size:13px;margin:2px 0 0;color:var(--text-secondary,#ccc);">${msg.text}</p></div>
+      </div>`).join('');
+
+    const page = document.getElementById('page-hub');
+    if (!page) return;
+
+    page.innerHTML = `
+      <div class="hub-page" style="max-width:800px;margin:0 auto;">
+        <button onclick="HubPage.closeGroupDetail()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:14px;margin-bottom:12px;">← Back to Learning Hub</button>
+
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+          <div style="font-size:2.5rem;">${p.icon}</div>
+          <div>
+            <h1 style="margin:0;font-size:1.5rem;">${p.name}</h1>
+            <p style="margin:4px 0 0;color:var(--text-muted);font-size:13px;">${p.desc}</p>
+            <span class="project-status ${p.status}" style="margin-top:6px;display:inline-block;">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div style="margin-bottom:24px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+            <span>Group Progress</span><span>${p.progress}%</span>
+          </div>
+          <div style="height:8px;background:var(--bg-tertiary,#333);border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${p.progress}%;background:var(--accent,#a855f7);border-radius:4px;transition:width 0.3s;"></div>
+          </div>
+        </div>
+
+        <!-- Study Materials -->
+        <div style="margin-bottom:24px;padding:16px;background:var(--bg-secondary,#1e1e2e);border-radius:12px;">
+          <h3 style="margin:0 0 12px;font-size:14px;">📚 Study Materials</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📕 Course Notes.pdf</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📘 Reference Guide.docx</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-tertiary,#2a2a3e);border-radius:8px;font-size:13px;">📝 Meeting Notes.md</div>
+          </div>
+        </div>
+
+        <!-- Members (hidden by default) -->
+        <div style="margin-bottom:24px;">
+          <button onclick="HubPage.toggleGroupMembers()" style="background:none;border:1px solid var(--border,#444);border-radius:8px;padding:10px 16px;color:var(--text-primary,#fff);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;width:100%;">
+            👥 Members (${p.members.length}) — <span style="color:var(--text-muted);">click to expand</span>
+          </button>
+          <div id="groupMembersList" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:0 0 12px 12px;margin-top:-4px;">
+            ${membersHTML}
+          </div>
+        </div>
+
+        <!-- Group Chat (hidden by default) -->
+        <div style="margin-bottom:24px;">
+          <button onclick="HubPage.toggleGroupChat()" style="background:none;border:1px solid var(--border,#444);border-radius:8px;padding:10px 16px;color:var(--text-primary,#fff);cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;width:100%;">
+            💬 Group Chat — <span style="color:var(--text-muted);">click to expand</span>
+          </button>
+          <div id="groupChatPanel" style="display:none;padding:12px 16px;background:var(--bg-secondary,#1e1e2e);border-radius:0 0 12px 12px;margin-top:-4px;max-height:250px;overflow-y:auto;">
+            ${chatHTML || '<p style="color:var(--text-muted);font-size:13px;">No messages yet.</p>'}
+          </div>
+        </div>
+
+      </div>
+    `;
+  }
+
+  function closeGroupDetail() {
+    render();
+  }
+
+  function toggleGroupMembers() {
+    const el = document.getElementById('groupMembersList');
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function toggleGroupChat() {
+    const el = document.getElementById('groupChatPanel');
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  }
+
+  // ── Group Detail View End ──────────────────────────────────
+
   return {
     render,
     switchTab,
@@ -1192,6 +1288,11 @@ const HubPage = (() => {
     removeGroupFile,
     onAssignmentToggle,
     updateCreateBtn,
+    // Group detail
+    openGroup,
+    closeGroupDetail,
+    toggleGroupMembers,
+    toggleGroupChat,
     // Leaderboard (exposed for live refresh)
     buildLeaderboardHTML,
   };
