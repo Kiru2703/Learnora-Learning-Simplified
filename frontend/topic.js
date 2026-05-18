@@ -246,6 +246,12 @@ const TopicExam = (() => {
 
     // Auto-generate questions via Bedrock if none exist for this topic
     if (questions.length === 0 && window.LEARNORA_API_URL) {
+      // Show loading state
+      var container = document.getElementById('examQuestions');
+      if (container) {
+        container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--text-muted);"><div class="exam-loading-spinner"></div><p style="margin-top:1rem;">Generating questions...</p></div>';
+      }
+
       var _examTopicId = topicId;
       var _examTitle = topicTitle;
       var _examPrompt = 'Generate 4 exam questions for the topic "' + _examTitle + '". Return JSON only in this exact format: [{"type":"mcq","text":"Question?","opts":["A","B","C","D"],"correct":0},{"type":"short","text":"Question?","answer":"keyword","hint":"Hint."}]. Mix MCQ and short-answer. Return JSON array only, no other text.';
