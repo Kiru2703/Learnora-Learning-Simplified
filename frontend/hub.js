@@ -74,16 +74,20 @@ const HubPage = (() => {
     general: [],
   };
 
-  // ── Available users for member selection ──────────────────
-  const ALL_USERS = [
-    { id: 'alex',   name: 'Alex Chen',    avatar: 'AC', color: '#7c3aed' },
-    { id: 'maya',   name: 'Maya Patel',   avatar: 'MP', color: '#2563eb' },
-    { id: 'jordan', name: 'Jordan Lee',   avatar: 'JL', color: '#0d9488' },
-    { id: 'sam',    name: 'Sam Rivera',   avatar: 'SR', color: '#db2777' },
-    { id: 'taylor', name: 'Taylor Kim',   avatar: 'TK', color: '#d97706' },
-    { id: 'casey',  name: 'Casey Morgan', avatar: 'CM', color: '#2563eb' },
-    { id: 'riley',  name: 'Riley Zhang',  avatar: 'RZ', color: '#0d9488' },
-  ];
+  // ── Available users for member selection — pulled from friends list ──────────────────
+  function getAvailableUsers() {
+    try {
+      const friends = JSON.parse(localStorage.getItem('learnora_friends') || '[]');
+      return friends.map(f => ({
+        id: f.name.toLowerCase().replace(/\s+/g, '-'),
+        name: f.name,
+        avatar: f.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase(),
+        color: '#7c3aed'
+      }));
+    } catch { return []; }
+  }
+
+  const ALL_USERS = getAvailableUsers();
 
   // Track selected members in the create-group modal
   let selectedMembers = new Set();
@@ -252,7 +256,7 @@ const HubPage = (() => {
                 Add Members <span class="cg-required">*</span>
                 <span class="form-label-optional" style="margin-left:4px;">select at least one</span>
               </label>
-              <div class="member-chips-grid" id="memberChipsGrid">${userChips}</div>
+              <div class="member-chips-grid" id="memberChipsGrid">${userChips || '<p style="color:var(--text-muted);font-size:12px;">No friends added yet. Add friends from your Profile Dashboard first.</p>'}</div>
               <div class="selected-members-summary" id="selectedMembersSummary" style="display:none"></div>
               <div class="cg-field-hint cg-field-hint--error" id="cgMembersError" style="display:none">
                 Please select at least one member.
@@ -352,7 +356,7 @@ const HubPage = (() => {
     if (!btn) return;
 
     const name         = document.getElementById('cgGroupName')?.value.trim() || '';
-    const hasMembers   = selectedMembers.size > 0;
+    const hasMembers   = selectedMembers.size > 0 || ALL_USERS.length === 0;
     const isAssignment = document.getElementById('cgAssignmentToggle')?.checked;
     const dueDate      = document.getElementById('cgDueDate')?.value || '';
 
@@ -436,8 +440,8 @@ const HubPage = (() => {
     }
     document.getElementById('cgGroupName')?.classList.remove('input-error');
 
-    // Guard: at least one member required
-    if (selectedMembers.size === 0) {
+    // Guard: at least one member required (only if friends exist)
+    if (selectedMembers.size === 0 && ALL_USERS.length > 0) {
       document.getElementById('cgMembersError').style.display = 'block';
       return;
     }
