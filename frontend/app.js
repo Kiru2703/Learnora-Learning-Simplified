@@ -339,11 +339,12 @@ function openPathway(id) {
 
     const fullPrompt = `${notePrompt}
 
-Format as clean HTML using only: <h2>, <h3>, <p>, <ul>, <li>, <strong>.
-Include: overview, key concepts, and examples.
-Keep it concise (150-200 words). Do NOT use markdown code fences. Output raw HTML only.`;
+Format as clean HTML. Use <h2> for title, <p> for text, <ul><li> for lists, <strong> for key terms.
+Be brief: 3-4 short paragraphs max. No markdown fences. Raw HTML only.`;
 
+    console.log('[Learnora] Generating notes for:', noteTopicTitle);
     BedrockAI.chat(fullPrompt, { history: [] }).then(rawHtml => {
+      console.log('[Learnora] Notes received, length:', rawHtml.length);
       // Strip markdown code fences if present
       const html = rawHtml.replace(/```html\s*/gi, '').replace(/```\s*/g, '').trim();
       // Store generated content
@@ -355,7 +356,7 @@ Keep it concise (150-200 words). Do NOT use markdown code fences. Output raw HTM
         notesEl.innerHTML = html;
       }
     }).catch(err => {
-      console.error('Failed to generate notes:', err);
+      console.error('[Learnora] Failed to generate notes:', err);
       const notesEl = document.getElementById('topicNotesContent');
       if (notesEl) {
         notesEl.innerHTML = '<p style="color:var(--text-muted)">Could not generate notes: ' + err.message + '</p>';
