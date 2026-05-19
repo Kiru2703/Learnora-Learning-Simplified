@@ -513,6 +513,11 @@ const ChatPage = (() => {
           const reply = chatJson.content || '';
           _chatHistory.push({ role: 'user', content: query });
           _chatHistory.push({ role: 'assistant', content: reply });
+          // Add to recent chats sidebar
+          if (!window._recentChats) window._recentChats = [];
+          window._recentChats.unshift(query);
+          if (window._recentChats.length > 5) window._recentChats.pop();
+          if (typeof window.renderPathways === 'function') window.renderPathways();
           removeTyping();
           addMessage('assistant', _formatMarkdown(reply), true);
         }
