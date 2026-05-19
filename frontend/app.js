@@ -106,6 +106,9 @@ function navigateTo(page) {
 var PATHWAYS = [];
 // Pathways are dynamically generated when you upload notes or ask the chat.
 
+// Recent chat questions (non-pathway)
+window._recentChats = [];
+
 // Track which pathway groups are open and which topic/pathway is active
 const pathwayState = {
   openGroups:    new Set(),   // all collapsed by default
@@ -157,6 +160,16 @@ function renderPathways() {
   }
 
   container.innerHTML = groupsHTML + recentHTML;
+
+  // Also render recent chat history
+  const chatHistoryEl = document.getElementById('chatHistoryList');
+  if (chatHistoryEl && window._recentChats && window._recentChats.length > 0) {
+    chatHistoryEl.innerHTML = window._recentChats.slice(0, 5).map(function(c) {
+      return '<div class="recent-topic-item" onclick="navigateTo(\'chat\')" style="cursor:pointer;"><span class="recent-topic-dot" style="background:var(--accent,#a855f7);"></span><div style="flex:1;min-width:0;"><span class="recent-topic-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">' + c + '</span></div></div>';
+    }).join('');
+  } else if (chatHistoryEl) {
+    chatHistoryEl.innerHTML = '';
+  }
 }
 var PATHWAY_DATA = {};
 // Topic content is generated dynamically by Bedrock when you open a topic.
