@@ -41,14 +41,7 @@ It outlines Learnora’s vision, features, and roadmap.
 
 ---
 
-## 🤝 Contribution
-We welcome contributions!  
-1. Fork the repo  
-2. Create a new branch (`feature/your-feature`)  
-3. Commit changes  
-4. Open a Pull Request  
+## 📜 Competition Note
+This project was created specifically for the **AWS Cendekiawan AI Competition 2026**.  
+It is intended as a showcase project and not licensed for external commercial use.
 
----
-
-## 📜 License
-This project is licensed under the MIT License – see the [LICENSE](./LICENSE) file for details.
