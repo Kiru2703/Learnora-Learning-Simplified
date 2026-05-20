@@ -5,7 +5,7 @@ Learnora is a web application designed to simplify learning by providing a clean
 ---
 
 ## 🏆 Competition Context
-This project was built for the **AWS Competition 2026**.  
+This project was built for the **AWS Cendekiawan AI Competition 2026**.  
 It showcases serverless architecture, cloud deployment, and practical application of AWS services.
 
 ---
