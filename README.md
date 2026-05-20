@@ -36,7 +36,7 @@ It showcases serverless architecture, cloud deployment, and practical applicatio
 ---
 
 ## 📑 Presentation Slides
-The pitch deck used for the competition is available in the [`docs/`](./docs) folder.  
+The pitch deck used for the competition is available in the [`main/`](./main) folder.  
 It outlines Learnora’s vision, features, and roadmap.
 
 ---
