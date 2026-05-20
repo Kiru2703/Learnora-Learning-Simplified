@@ -28,10 +28,10 @@ It showcases serverless architecture, cloud deployment, and practical applicatio
 ---
 
 ## 📂 Repository Structure
-/frontend                  → Web UI files
-/backend                   → Lambda functions
-/Learnora - slides.ppt     → Pitch deck (slides)
-/README.md                 → Project overview
+- /frontend                  → Web UI files
+- /backend                   → Lambda functions
+- /Learnora - slides.ppt     → Pitch deck (slides)
+- /README.md                 → Project overview
 
 ---
 
